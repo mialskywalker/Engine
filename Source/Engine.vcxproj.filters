@@ -22,6 +22,9 @@
     <ClCompile Include="D3D12Module.cpp">
       <Filter>Modules</Filter>
     </ClCompile>
+    <ClCompile Include="Exercise1.cpp">
+      <Filter>Exercises</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdParty\imgui-1.89.8\backends\imgui_impl_win32.h" />
@@ -50,6 +53,9 @@
     <ClInclude Include="D3D12Module.h">
       <Filter>Modules</Filter>
     </ClInclude>
+    <ClInclude Include="Exercise1.h">
+      <Filter>Exercises</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Engine.rc" />
@@ -64,6 +70,9 @@
   <ItemGroup>
     <Filter Include="Modules">
       <UniqueIdentifier>{7bf3edad-f92e-4940-b602-1ad8377e5ed0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Exercises">
+      <UniqueIdentifier>{b507d0c9-643b-4c7e-af83-6e82775f18c2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
