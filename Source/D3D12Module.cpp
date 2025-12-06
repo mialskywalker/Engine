@@ -7,8 +7,7 @@ D3D12Module::~D3D12Module() {}
 
 bool D3D12Module::init()
 {
-	windowWidth = 1280;
-	windowHeight = 720;
+	getWindowSize(windowWidth, windowHeight);
 
 #if defined(_DEBUG)
 	enableDebugLayer();
@@ -115,7 +114,7 @@ void D3D12Module::createSwapChain()
 	desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	desc.BufferCount = FRAMES_IN_FLIGHT;
 
-	desc.Scaling = DXGI_SCALING_STRETCH;
+	desc.Scaling = DXGI_SCALING_NONE;
 	desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 
 	desc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
@@ -154,4 +153,51 @@ void D3D12Module::createFence()
 D3D12_CPU_DESCRIPTOR_HANDLE D3D12Module::getRenderTargetDescriptor()
 {
 	return CD3DX12_CPU_DESCRIPTOR_HANDLE(rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(), currentIndex, device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV));
+}
+
+unsigned D3D12Module::getWindowSize(unsigned& width, unsigned& height)
+{
+	RECT client = {};
+	GetClientRect(hWnd, &client);
+
+	width = unsigned(client.right - client.left);
+	height = unsigned(client.bottom - client.top);
+	return width, height;
+}
+
+void D3D12Module::resize()
+{
+	unsigned w, h;
+	getWindowSize(w, h);
+
+	if (w != windowWidth || h != windowHeight)
+	{
+		windowWidth = w;
+		windowHeight = h;
+		flush();
+
+		for (unsigned i = 0; i < FRAMES_IN_FLIGHT; ++i)
+		{
+			backBuffers[i].Reset();
+			fenceValues[i] = 0;
+		}
+
+		DXGI_SWAP_CHAIN_DESC desc = {};
+
+		swapChain->GetDesc(&desc);
+		swapChain->ResizeBuffers(FRAMES_IN_FLIGHT, windowWidth, windowHeight, desc.BufferDesc.Format, desc.Flags);
+
+		if (windowWidth > 0 && windowHeight > 0)
+		{
+			createRTV();
+		}
+	}
+
+}
+
+void D3D12Module::flush()
+{
+	commandQueue->Signal(fence.Get(), ++fenceCounter);
+	fence->SetEventOnCompletion(fenceCounter, event);
+	WaitForSingleObject(event, INFINITE);
 }
