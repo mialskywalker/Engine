@@ -3,7 +3,10 @@
 
 D3D12Module::D3D12Module(HWND hwnd) : hWnd(hwnd) {}
 
-D3D12Module::~D3D12Module() {}
+D3D12Module::~D3D12Module()
+{
+	flush();
+}
 
 bool D3D12Module::init()
 {
