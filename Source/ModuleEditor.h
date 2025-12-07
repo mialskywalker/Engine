@@ -10,7 +10,7 @@ class ModuleEditor : public Module
 {
 	ImGuiPass* imguiPass = nullptr;
 	ImGuiIO* io = nullptr;
-	
+
 	int maxFps = 0;
 	double currentFPS = 0.0;
 	double currentMS = 0.0;

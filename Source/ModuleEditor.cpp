@@ -10,17 +10,17 @@ ModuleEditor::ModuleEditor() {}
 
 ModuleEditor::~ModuleEditor()
 {
-	delete imguiPass;
+    delete imguiPass;
 }
 
 bool ModuleEditor::init()
 {
-	D3D12Module* d3d12 = app->getD3D12();
-	imguiPass = new ImGuiPass(d3d12->getDevice(), d3d12->getHwnd());
+    D3D12Module* d3d12 = app->getD3D12();
+    imguiPass = new ImGuiPass(d3d12->getDevice(), d3d12->getHwnd());
     io = &ImGui::GetIO();
     lastFrameTime = std::chrono::high_resolution_clock::now();
 
-	return imguiPass;
+    return imguiPass;
 }
 
 void ModuleEditor::update()
@@ -72,10 +72,10 @@ void ModuleEditor::update()
 
 void ModuleEditor::render()
 {
-	D3D12Module* d3d12 = app->getD3D12();
-	ID3D12GraphicsCommandList* commandList = d3d12->getCommandList();
+    D3D12Module* d3d12 = app->getD3D12();
+    ID3D12GraphicsCommandList* commandList = d3d12->getCommandList();
 
-	commandList->Reset(d3d12->getCurrentCommandAllocator(), nullptr);
+    commandList->Reset(d3d12->getCurrentCommandAllocator(), nullptr);
 
     ID3D12Resource* backBuffer = d3d12->getCurrentBackBuffer();
     CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
@@ -129,7 +129,7 @@ void ModuleEditor::configurationWindow()
 
     ImGui::Text("Options");
     if (ImGui::CollapsingHeader("Application"))
-    {      
+    {
 
         ImGui::Text("App Name:");
         ImGui::SameLine();
@@ -145,13 +145,13 @@ void ModuleEditor::configurationWindow()
 
         // FPS graph
         char title[25];
-        sprintf_s(title,"Framerate: %.1f", fpsHistory[lastIndex]);
+        sprintf_s(title, "Framerate: %.1f", fpsHistory[lastIndex]);
         ImGui::PlotHistogram("##framerate", fpsHistory, HISTORY_SIZE, historyIndex, title, 0.0f, 3000.0f, ImVec2(310, 100));
 
         // MS graph
         sprintf_s(title, "Milliseconds: %.1f", msHistory[lastIndex]);
         ImGui::PlotHistogram("##milliseconds", msHistory, HISTORY_SIZE, historyIndex, title, 0.0f, 40.0f, ImVec2(310, 100));
-    }    
+    }
 
     ImGui::End();
 }

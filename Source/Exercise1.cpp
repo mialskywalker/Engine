@@ -7,6 +7,7 @@
 #include <d3d12.h>
 #include "d3dx12.h"
 
+
 void Exercise1::render()
 {
 	D3D12Module* d3d12 = app->getD3D12();
@@ -18,7 +19,7 @@ void Exercise1::render()
 
 	float color[] = { 1.0f, 0.0f, 0.0f, 1.0f };
 	commandList->ClearRenderTargetView(d3d12->getRenderTargetDescriptor(), color, 0, nullptr);
-	
+
 	barrier = CD3DX12_RESOURCE_BARRIER::Transition(d3d12->getCurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 	commandList->ResourceBarrier(1, &barrier);
 	commandList->Close();
