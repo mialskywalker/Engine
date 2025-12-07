@@ -10,25 +10,27 @@ D3D12Module::~D3D12Module()
 
 bool D3D12Module::init()
 {
+	bool success = false;
+
 	getWindowSize(windowWidth, windowHeight);
 
 #if defined(_DEBUG)
 	enableDebugLayer();
 #endif
-	createFactory();
-	createDevice();
+	success = createFactory();
+	success = success && createDevice();
 
 #if defined(_DEBUG)
 	createInfoQueue();
 #endif
 
-	createCommandQueue();
-	createCommandList();
-	createSwapChain();
-	createRTV();
-	createFence();
+	success = success && createCommandQueue();
+	success = success && createCommandList();
+	success = success && createSwapChain();
+	success = success && createRTV();
+	success = success && createFence();
 
-	return true;
+	return success;
 }
 
 void D3D12Module::preRender()
@@ -57,21 +59,27 @@ void D3D12Module::enableDebugLayer()
 	debugInterface->EnableDebugLayer();
 }
 
-void D3D12Module::createFactory()
+bool D3D12Module::createFactory()
 {
+	bool success = false;
 
 #if defined(_DEBUG)
-	CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, IID_PPV_ARGS(&factory));
+	success = SUCCEEDED(CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, IID_PPV_ARGS(&factory)));
 #else
-	CreateDXGIFactory2(0, IID_PPV_ARGS(&factory));
+	success = SUCCEEDED(CreateDXGIFactory2(0, IID_PPV_ARGS(&factory)));
 #endif
 
+	return success;
 }
 
-void D3D12Module::createDevice()
+bool D3D12Module::createDevice()
 {
+	bool success = false;
+
 	factory->EnumAdapterByGpuPreference(0, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&adapter));
-	D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&device));
+	success = SUCCEEDED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&device)));
+	
+	return success;
 }
 
 void D3D12Module::createInfoQueue()
@@ -82,30 +90,40 @@ void D3D12Module::createInfoQueue()
 	infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, TRUE);
 }
 
-void D3D12Module::createCommandQueue()
+bool D3D12Module::createCommandQueue()
 {
+	bool success = false;
+
 	D3D12_COMMAND_QUEUE_DESC desc = {};
 
 	desc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 	desc.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL;
 	desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 
-	device->CreateCommandQueue(&desc, IID_PPV_ARGS(&commandQueue));
+	success = SUCCEEDED(device->CreateCommandQueue(&desc, IID_PPV_ARGS(&commandQueue)));
+
+	return success;
 }
 
-void D3D12Module::createCommandList()
+bool D3D12Module::createCommandList()
 {
+	bool success = false;
+
 	for (unsigned i = 0; i < FRAMES_IN_FLIGHT; ++i)
 	{
 		device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocators[i]));
 	}
 	
-	device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocators[0].Get(), nullptr, IID_PPV_ARGS(&commandList));
+	success = SUCCEEDED(device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocators[0].Get(), nullptr, IID_PPV_ARGS(&commandList)));
 	commandList->Close();
+
+	return success;
 }
 
-void D3D12Module::createSwapChain()
+bool D3D12Module::createSwapChain()
 {
+	bool success = false;
+
 	DXGI_SWAP_CHAIN_DESC1 desc = {};
 
 	desc.Width = windowWidth;
@@ -124,17 +142,21 @@ void D3D12Module::createSwapChain()
 	desc.Flags = 0;
 
 	ComPtr<IDXGISwapChain1> swapChain1;
-	factory->CreateSwapChainForHwnd(commandQueue.Get(), hWnd, &desc, nullptr, nullptr, &swapChain1);
-	swapChain1.As(&swapChain);
+	success = SUCCEEDED(factory->CreateSwapChainForHwnd(commandQueue.Get(), hWnd, &desc, nullptr, nullptr, &swapChain1));
+	success = success && SUCCEEDED(swapChain1.As(&swapChain));
+
+	return success;
 }
 
-void D3D12Module::createRTV()
+bool D3D12Module::createRTV()
 {
+	bool success = false;
+
 	D3D12_DESCRIPTOR_HEAP_DESC desc = {};
 	desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 	desc.NumDescriptors = FRAMES_IN_FLIGHT;
 	
-	device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&rtvDescriptorHeap));
+	success = SUCCEEDED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&rtvDescriptorHeap)));
 
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvCPUHandle(rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 	unsigned descriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
@@ -145,12 +167,19 @@ void D3D12Module::createRTV()
 		device->CreateRenderTargetView(backBuffers[i].Get(), nullptr, rtvCPUHandle);
 		rtvCPUHandle.ptr += descriptorSize;
 	}
+
+	return success;
 }
 
-void D3D12Module::createFence()
+bool D3D12Module::createFence()
 {
+	bool success = false;
+
 	device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
 	event = CreateEvent(NULL, FALSE, FALSE, NULL);
+	success = event != NULL;
+
+	return success;
 }
 
 D3D12_CPU_DESCRIPTOR_HANDLE D3D12Module::getRenderTargetDescriptor()

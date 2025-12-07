@@ -10,14 +10,16 @@ ModuleResources::~ModuleResources() {}
 
 bool ModuleResources::init()
 {
+	bool success = false;
+
 	D3D12Module* d3d12 = app->getD3D12();
 	ID3D12Device5* device = d3d12->getDevice();
 
-	device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocator));
-	device->CreateCommandList1(0, D3D12_COMMAND_LIST_TYPE_DIRECT, D3D12_COMMAND_LIST_FLAG_NONE, IID_PPV_ARGS(&commandList));
-	commandList->Reset(commandAllocator.Get(), nullptr);
+	success = SUCCEEDED(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocator)));
+	success = success && SUCCEEDED(device->CreateCommandList1(0, D3D12_COMMAND_LIST_TYPE_DIRECT, D3D12_COMMAND_LIST_FLAG_NONE, IID_PPV_ARGS(&commandList)));
+	success = success && SUCCEEDED(commandList->Reset(commandAllocator.Get(), nullptr));
 
-	return true;
+	return success;
 }
 
 ComPtr<ID3D12Resource> ModuleResources::createUploadBuffer(size_t size, void* cpuData)

@@ -57,14 +57,14 @@ public:
 private:
 
 	void enableDebugLayer();
-	void createFactory();
-	void createDevice();
+	bool createFactory();
+	bool createDevice();
 	void createInfoQueue();
-	void createCommandQueue();
-	void createCommandList();
-	void createSwapChain();
-	void createRTV();
-	void createFence();
+	bool createCommandQueue();
+	bool createCommandList();
+	bool createSwapChain();
+	bool createRTV();
+	bool createFence();
 
 	unsigned getWindowSize(unsigned& width, unsigned& height);
 };
