@@ -29,6 +29,7 @@ bool D3D12Module::init()
 	success = success && createSwapChain();
 	success = success && createRTV();
 	success = success && createFence();
+	success = success && createDepthStencil();
 
 	return success;
 }
@@ -182,9 +183,42 @@ bool D3D12Module::createFence()
 	return success;
 }
 
+bool D3D12Module::createDepthStencil()
+{
+	bool success = false;
+
+	CD3DX12_HEAP_PROPERTIES heapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	CD3DX12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, windowWidth, windowHeight,
+		1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+
+	D3D12_CLEAR_VALUE clearValue = {};
+	clearValue.Format = DXGI_FORMAT_D32_FLOAT;
+	clearValue.DepthStencil.Depth = 1.0f;
+	clearValue.DepthStencil.Stencil = 0;
+
+	success = SUCCEEDED(device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &desc,
+		D3D12_RESOURCE_STATE_DEPTH_WRITE, &clearValue, IID_PPV_ARGS(&depthStencilBuffer)));
+
+	D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
+	heapDesc.NumDescriptors = 1;
+	heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+	heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+
+	success = success && SUCCEEDED(device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&dsvDescriptorHeap)));
+
+	device->CreateDepthStencilView(depthStencilBuffer.Get(), nullptr, dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+
+	return success;
+}
+
 D3D12_CPU_DESCRIPTOR_HANDLE D3D12Module::getRenderTargetDescriptor()
 {
 	return CD3DX12_CPU_DESCRIPTOR_HANDLE(rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(), currentIndex, device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV));
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE D3D12Module::getDepthStencilDescriptor()
+{
+	return dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 }
 
 unsigned D3D12Module::getWindowSize(unsigned& width, unsigned& height)
@@ -222,6 +256,7 @@ void D3D12Module::resize()
 		if (windowWidth > 0 && windowHeight > 0)
 		{
 			createRTV();
+			createDepthStencil();
 		}
 	}
 

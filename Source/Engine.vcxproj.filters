@@ -34,6 +34,9 @@
     <ClCompile Include="Exercise2.cpp">
       <Filter>Exercises</Filter>
     </ClCompile>
+    <ClCompile Include="Exercise3.cpp">
+      <Filter>Exercises</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdParty\imgui-1.89.8\backends\imgui_impl_win32.h" />
@@ -74,6 +77,9 @@
     <ClInclude Include="Exercise2.h">
       <Filter>Exercises</Filter>
     </ClInclude>
+    <ClInclude Include="Exercise3.h">
+      <Filter>Exercises</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Engine.rc" />
@@ -101,6 +107,12 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Exercise2PS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Exercise3VS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Exercise3PS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>
