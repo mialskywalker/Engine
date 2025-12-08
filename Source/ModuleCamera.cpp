@@ -38,29 +38,45 @@ void ModuleCamera::update()
 
     if (enabled)
     {
-        Keyboard& keyboard = Keyboard::Get();
-      
+        Keyboard& keyboard = Keyboard::Get();      
         const Keyboard::State& keyState = keyboard.GetState();
 
         float elapsedSec = app->getElapsedMilis() * 0.005f;
         if (keyState.LeftShift) elapsedSec = app->getElapsedMilis() * 0.01f;
 
+        int mouseScrollWheel = mouseState.scrollWheelValue;
+
         Vector3 translate = Vector3::Zero;
         Vector2 rotate = Vector2::Zero;
 
-        if (mouseState.leftButton)
+        if (mouseState.rightButton)
         {
             rotate.x = float(dragPosX - mouseState.x) * 0.005f;
             rotate.y = float(dragPosY - mouseState.y) * 0.005f;
+
+            if (keyState.W) translate.z -= 0.45f * elapsedSec;
+            if (keyState.S) translate.z += 0.45f * elapsedSec;
+            if (keyState.A) translate.x -= 0.45f * elapsedSec;
+            if (keyState.D) translate.x += 0.45f * elapsedSec;
+            if (keyState.Q) translate.y -= 0.45f * elapsedSec;
+            if (keyState.E) translate.y += 0.45f * elapsedSec;
         }
 
-        if (keyState.W) translate.z -= 0.45f * elapsedSec;
-        if (keyState.S) translate.z += 0.45f * elapsedSec;
-        if (keyState.A) translate.x -= 0.45f * elapsedSec;
-        if (keyState.D) translate.x += 0.45f * elapsedSec;
-        if (keyState.Q) translate.y += 0.45f * elapsedSec;
-        if (keyState.E) translate.y -= 0.45f * elapsedSec;
+        if (keyState.LeftAlt)
+        {
+            if (mouseState.leftButton)
+            {
+                translate.x = float(dragPosX - mouseState.x) * 0.005f;
+                translate.y = float(dragPosY - mouseState.y) * 0.005f;
+                rotate.x = float(dragPosX - mouseState.x) * 0.005f;
+                rotate.y = float(dragPosY - mouseState.y) * 0.005f;
+            }
+        }
 
+        if (mouseScrollWheel > prevWheel) translate.z -= 1.0f;
+        if (mouseScrollWheel < prevWheel) translate.z += 1.0f;
+
+        prevWheel = mouseScrollWheel;
 
         Vector3 localDir = Vector3::Transform(translate, rotation);
         params.worldSpacePosition += localDir * getTranslationSpeed();
@@ -68,9 +84,9 @@ void ModuleCamera::update()
         params.pitch += XMConvertToRadians(getRotationSpeed() * rotate.y);
 
 
-        Quaternion rotation_polar = Quaternion::CreateFromAxisAngle(Vector3(0.0f, 1.0f, 0.0f), params.yaw);
-        Quaternion rotation_azimuthal = Quaternion::CreateFromAxisAngle(Vector3(1.0f, 0.0f, 0.0f), params.pitch);
-        rotation = rotation_azimuthal * rotation_polar;
+        Quaternion rotation_yaw = Quaternion::CreateFromAxisAngle(Vector3(0.0f, 1.0f, 0.0f), params.yaw);
+        Quaternion rotation_pitch = Quaternion::CreateFromAxisAngle(Vector3(1.0f, 0.0f, 0.0f), params.pitch);
+        rotation = rotation_pitch * rotation_yaw;
         position = params.worldSpacePosition; 
 
         Quaternion invRot;

@@ -20,6 +20,7 @@ class ModuleCamera : public Module
     Vector3 position;
     Matrix view;
     bool enabled = true;
+    int prevWheel = 0;
 
 public:
 
