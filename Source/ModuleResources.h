@@ -2,7 +2,10 @@
 
 #include "Module.h"
 
-class D3D12Module;
+#include <filesystem>
+#include <vector>
+
+namespace DirectX { class ScratchImage;  struct TexMetadata; }
 
 class ModuleResources : public Module
 {
@@ -18,4 +21,6 @@ public:
 
 	ComPtr<ID3D12Resource> createUploadBuffer(size_t size, void* cpuData);
 	ComPtr<ID3D12Resource> createDefaultBuffer(size_t size, void* data);
+	ComPtr<ID3D12Resource> createTextureFromFile(const std::filesystem::path& path);
+
 };

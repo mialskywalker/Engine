@@ -9,6 +9,8 @@
 class Module;
 class D3D12Module;
 class ModuleResources;
+class ModuleShaderDescriptors;
+class ModuleSampler;
 
 class Application
 {
@@ -23,6 +25,9 @@ public:
 
     D3D12Module* getD3D12() { return d3d12; }
     ModuleResources* getResources() { return resources; }
+    ModuleShaderDescriptors* getShaderDescriptors() { return shaderDescriptors; }
+    ModuleSampler* getSamplers() { return samplers; }
+
 
     
     float                       getFPS() const { return 1000.0f * float(MAX_FPS_TICKS) / tickSum; }
@@ -39,6 +44,8 @@ private:
     std::vector<Module*> modules;
     D3D12Module* d3d12 = nullptr;
     ModuleResources* resources = nullptr;
+    ModuleShaderDescriptors* shaderDescriptors = nullptr;
+    ModuleSampler* samplers = nullptr;
 
     uint64_t  lastMilis = 0;
     TickList  tickList;
