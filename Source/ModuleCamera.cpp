@@ -49,8 +49,23 @@ void ModuleCamera::update()
         Vector3 translate = Vector3::Zero;
         Vector2 rotate = Vector2::Zero;
 
+        if (keyState.F)
+        {
+
+            params.worldSpacePosition = Vector3(0.0f, 1.0f, 10.0f);
+            position = Vector3(0.0f, 1.0f, 10.0f);
+
+            params.yaw = 0.0f;
+            params.pitch = 0.0f;
+
+            rotation = Quaternion::Identity;
+            return;
+        }
+
         if (mouseState.rightButton)
         {
+
+            SetCursor(LoadCursor(NULL, IDC_CROSS));
             rotate.x = float(dragPosX - mouseState.x) * 0.005f;
             rotate.y = float(dragPosY - mouseState.y) * 0.005f;
 
@@ -66,8 +81,9 @@ void ModuleCamera::update()
         {
             if (mouseState.leftButton)
             {
-                translate.x = float(dragPosX - mouseState.x) * 0.005f;
-                translate.y = float(dragPosY - mouseState.y) * 0.005f;
+                SetCursor(LoadCursor(NULL, IDC_SIZEALL));
+                translate.x = float(dragPosX - mouseState.x) * 0.01f;
+                translate.y = float(dragPosY - mouseState.y) * 0.01f;
                 rotate.x = float(dragPosX - mouseState.x) * 0.005f;
                 rotate.y = float(dragPosY - mouseState.y) * 0.005f;
             }
@@ -86,6 +102,7 @@ void ModuleCamera::update()
 
         Quaternion rotation_yaw = Quaternion::CreateFromAxisAngle(Vector3(0.0f, 1.0f, 0.0f), params.yaw);
         Quaternion rotation_pitch = Quaternion::CreateFromAxisAngle(Vector3(1.0f, 0.0f, 0.0f), params.pitch);
+
         rotation = rotation_pitch * rotation_yaw;
         position = params.worldSpacePosition; 
 
