@@ -136,7 +136,7 @@ void ModuleEditor::mainMenu()
 void ModuleEditor::configurationWindow()
 {
     ImGui::Begin("Configuration");
-    ImGui::SetNextWindowSize(ImVec2(320, 640), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(480, 720), ImGuiCond_Always);
 
     ImGui::Text("Options");
     if (ImGui::CollapsingHeader("Application"))

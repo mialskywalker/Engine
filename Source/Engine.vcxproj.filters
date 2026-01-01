@@ -22,9 +22,6 @@
     <ClCompile Include="D3D12Module.cpp">
       <Filter>Modules</Filter>
     </ClCompile>
-    <ClCompile Include="Exercise1.cpp">
-      <Filter>Exercises</Filter>
-    </ClCompile>
     <ClCompile Include="ModuleEditor.cpp">
       <Filter>Modules</Filter>
     </ClCompile>
