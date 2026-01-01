@@ -8,11 +8,6 @@
 
 class Module;
 class D3D12Module;
-class ModuleResources;
-class ModuleShaderDescriptors;
-class ModuleSampler;
-class ModuleCamera;
-class ModuleEditor;
 
 class Application
 {
@@ -26,13 +21,6 @@ public:
 	bool         cleanUp();
 
     D3D12Module* getD3D12() { return d3d12; }
-    ModuleResources* getResources() { return resources; }
-    ModuleShaderDescriptors* getShaderDescriptors() { return shaderDescriptors; }
-    ModuleSampler* getSamplers() { return samplers; }
-    ModuleCamera* getCamera() { return camera; }
-    ModuleEditor* getEditor() { return editor; }
-
-
     
     float                       getFPS() const { return 1000.0f * float(MAX_FPS_TICKS) / tickSum; }
     float                       getAvgElapsedMs() const { return tickSum / float(MAX_FPS_TICKS); }
@@ -47,11 +35,6 @@ private:
 
     std::vector<Module*> modules;
     D3D12Module* d3d12 = nullptr;
-    ModuleResources* resources = nullptr;
-    ModuleShaderDescriptors* shaderDescriptors = nullptr;
-    ModuleSampler* samplers = nullptr;
-    ModuleCamera* camera = nullptr;
-    ModuleEditor* editor = nullptr;
 
     uint64_t  lastMilis = 0;
     TickList  tickList;

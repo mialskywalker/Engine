@@ -22,33 +22,6 @@
     <ClCompile Include="D3D12Module.cpp">
       <Filter>Modules</Filter>
     </ClCompile>
-    <ClCompile Include="ModuleEditor.cpp">
-      <Filter>Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="ModuleResources.cpp">
-      <Filter>Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="Exercise2.cpp">
-      <Filter>Exercises</Filter>
-    </ClCompile>
-    <ClCompile Include="Exercise3.cpp">
-      <Filter>Exercises</Filter>
-    </ClCompile>
-    <ClCompile Include="ModuleShaderDescriptors.cpp">
-      <Filter>Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="Exercise4.cpp">
-      <Filter>Exercises</Filter>
-    </ClCompile>
-    <ClCompile Include="ModuleSampler.cpp">
-      <Filter>Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="ModuleCamera.cpp">
-      <Filter>Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="Assignment1.cpp">
-      <Filter>Exercises</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdParty\imgui-1.89.8\backends\imgui_impl_win32.h" />
@@ -77,36 +50,6 @@
     <ClInclude Include="D3D12Module.h">
       <Filter>Modules</Filter>
     </ClInclude>
-    <ClInclude Include="Exercise1.h">
-      <Filter>Exercises</Filter>
-    </ClInclude>
-    <ClInclude Include="ModuleEditor.h">
-      <Filter>Modules</Filter>
-    </ClInclude>
-    <ClInclude Include="ModuleResources.h">
-      <Filter>Modules</Filter>
-    </ClInclude>
-    <ClInclude Include="Exercise2.h">
-      <Filter>Exercises</Filter>
-    </ClInclude>
-    <ClInclude Include="Exercise3.h">
-      <Filter>Exercises</Filter>
-    </ClInclude>
-    <ClInclude Include="ModuleShaderDescriptors.h">
-      <Filter>Modules</Filter>
-    </ClInclude>
-    <ClInclude Include="Exercise4.h">
-      <Filter>Exercises</Filter>
-    </ClInclude>
-    <ClInclude Include="ModuleSampler.h">
-      <Filter>Modules</Filter>
-    </ClInclude>
-    <ClInclude Include="ModuleCamera.h">
-      <Filter>Modules</Filter>
-    </ClInclude>
-    <ClInclude Include="Assignment1.h">
-      <Filter>Exercises</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Engine.rc" />
@@ -128,31 +71,5 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{2e36eea4-aa89-41a4-9d16-b7024b2598f4}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="Exercise2VS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Exercise2PS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Exercise3VS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Exercise3PS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Exercise4PS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Exercise4VS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Assignment1PS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Assignment1VS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
   </ItemGroup>
 </Project>

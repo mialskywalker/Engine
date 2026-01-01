@@ -2,32 +2,13 @@
 #include "Application.h"
 #include "ModuleInput.h"
 #include "D3D12Module.h"
-#include "ModuleCamera.h"
-#include "Exercise1.h"
-#include "ModuleEditor.h"
-#include "ModuleResources.h"
-#include "ModuleShaderDescriptors.h"
-#include "ModuleSampler.h"
-#include "Exercise2.h"
-#include "Exercise3.h"
-#include "Exercise4.h"
-#include "Assignment1.h"
+
 
 
 Application::Application(int argc, wchar_t** argv, void* hWnd)
 {
     modules.push_back(new ModuleInput((HWND)hWnd));
     modules.push_back(d3d12 = new D3D12Module((HWND)hWnd));
-    modules.push_back(camera = new ModuleCamera());
-    //modules.push_back(new Exercise1());
-    modules.push_back(editor = new ModuleEditor());
-    modules.push_back(resources = new ModuleResources());
-    modules.push_back(shaderDescriptors = new ModuleShaderDescriptors());
-    modules.push_back(samplers = new ModuleSampler());
-    //modules.push_back(new Exercise2());
-    //modules.push_back(new Exercise3());
-    //modules.push_back(new Exercise4());
-    modules.push_back(new Assignment1());
 }
 
 Application::~Application()
