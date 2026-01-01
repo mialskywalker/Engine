@@ -22,6 +22,9 @@
     <ClCompile Include="D3D12Module.cpp">
       <Filter>Modules</Filter>
     </ClCompile>
+    <ClCompile Include="Exercise1.cpp">
+      <Filter>Exercises</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdParty\imgui-1.89.8\backends\imgui_impl_win32.h" />
@@ -49,6 +52,9 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="D3D12Module.h">
       <Filter>Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Exercise1.h">
+      <Filter>Exercises</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
