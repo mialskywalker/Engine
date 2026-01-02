@@ -38,6 +38,7 @@ public:
 	bool init() override;
 	void preRender() override;
 	void postRender() override;
+	void flush();
 
 	IDXGIFactory6* getFactory() { return factory.Get(); }
 	IDXGIAdapter4* getAdapter() { return adapter.Get(); }
@@ -50,7 +51,7 @@ public:
 	unsigned getWindowWidth() { return this->windowWidth; }
 	unsigned getWindowHeight() { return this->windowHeight; }
 
-	D3D12_CPU_DESCRIPTOR_HANDLE getRTDescriptor();
+	D3D12_CPU_DESCRIPTOR_HANDLE getRTVCPUDescriptorHandle();
 
 private:
 

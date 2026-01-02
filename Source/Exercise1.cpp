@@ -12,8 +12,8 @@ void Exercise1::render()
 	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(d3d12->getCurrentBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	commandList->ResourceBarrier(1, &barrier);
 
-	float color[] = {1.0f, 0.0f, 0.0f, 0.0f};
-	commandList->ClearRenderTargetView(d3d12->getRTDescriptor(), color, 0, nullptr);
+	float color[] = { 1.0f, 0.0f, 0.0f, 0.0f };
+	commandList->ClearRenderTargetView(d3d12->getRTVCPUDescriptorHandle(), color, 0, nullptr);
 
 	barrier = CD3DX12_RESOURCE_BARRIER::Transition(d3d12->getCurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 	commandList->ResourceBarrier(1, &barrier);
@@ -21,5 +21,4 @@ void Exercise1::render()
 
 	ID3D12CommandList* lists[] = { commandList };
 	d3d12->getCommandQueue()->ExecuteCommandLists(1, lists);
-
 }

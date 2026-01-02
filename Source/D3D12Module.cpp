@@ -3,7 +3,10 @@
 
 D3D12Module::D3D12Module(HWND hwnd) : hWnd(hwnd) {}
 
-D3D12Module::~D3D12Module() {}
+D3D12Module::~D3D12Module()
+{
+	flush();
+}
 
 bool D3D12Module::init()
 {
@@ -44,7 +47,14 @@ void D3D12Module::postRender()
 {
 	swapChain->Present(0, 0);
 	fenceValues[currentBufferIndex] = ++fenceValue;
-	commandQueue->Signal(fence.Get(), fenceValues[currentBufferIndex]);
+	commandQueue->Signal(fence.Get(), fenceValue);
+}
+
+void D3D12Module::flush()
+{
+	commandQueue->Signal(fence.Get(), ++fenceValue);
+	fence->SetEventOnCompletion(fenceValue, event);
+	WaitForSingleObject(event, INFINITE);
 }
 
 void D3D12Module::enableDebugLayer()
@@ -189,7 +199,7 @@ unsigned D3D12Module::getWindowSize(unsigned& width, unsigned& height)
 	return width, height;
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE D3D12Module::getRTDescriptor()
+D3D12_CPU_DESCRIPTOR_HANDLE D3D12Module::getRTVCPUDescriptorHandle()
 {
 	return CD3DX12_CPU_DESCRIPTOR_HANDLE(RTVdescriptorHeap->GetCPUDescriptorHandleForHeapStart(), currentBufferIndex, device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV));
 }
