@@ -28,6 +28,9 @@
     <ClCompile Include="ModuleResources.cpp">
       <Filter>Modules</Filter>
     </ClCompile>
+    <ClCompile Include="Exercise2.cpp">
+      <Filter>Exercises</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdParty\imgui-1.89.8\backends\imgui_impl_win32.h" />
@@ -61,6 +64,9 @@
     </ClInclude>
     <ClInclude Include="ModuleResources.h">
       <Filter>Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Exercise2.h">
+      <Filter>Exercises</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

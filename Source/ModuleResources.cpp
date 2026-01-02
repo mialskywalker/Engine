@@ -3,12 +3,15 @@
 #include "D3D12Module.h"
 #include "ModuleResources.h"
 
+ModuleResources::ModuleResources() {};
+
+ModuleResources::~ModuleResources() {};
+
 bool ModuleResources::init()
 {
 	D3D12Module* d3d12 = app->getD3D12();
 	bool succeed = SUCCEEDED(d3d12->getDevice()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocator)));
 	succeed = succeed && SUCCEEDED(d3d12->getDevice()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator.Get(), nullptr, IID_PPV_ARGS(&commandList)));
-	commandList->Close();
 
 	return succeed;
 }
@@ -42,7 +45,7 @@ ComPtr<ID3D12Resource> ModuleResources::createDefaultBuffer(size_t bufferSize, v
 
 	D3D12_RESOURCE_DESC stagingDesc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize);
 	CD3DX12_HEAP_PROPERTIES stagingProps(D3D12_HEAP_TYPE_UPLOAD);
-	d3d12->getDevice()->CreateCommittedResource(&stagingProps, D3D12_HEAP_FLAG_NONE, &stagingDesc, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&stagingBuffer));
+	d3d12->getDevice()->CreateCommittedResource(&stagingProps, D3D12_HEAP_FLAG_NONE, &stagingDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&stagingBuffer));
 
 	BYTE* pData = nullptr;
 	CD3DX12_RANGE readRange(0, 0);
@@ -52,16 +55,21 @@ ComPtr<ID3D12Resource> ModuleResources::createDefaultBuffer(size_t bufferSize, v
 
 	stagingBuffer->Unmap(0, nullptr);
 
-	// try the createUploadBuffer func instead of typing that
-
 
 	ComPtr<ID3D12Resource> defaultBuffer;
 
 	D3D12_RESOURCE_DESC defaultDesc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize);
 	CD3DX12_HEAP_PROPERTIES defaultProps(D3D12_HEAP_TYPE_DEFAULT);
-	d3d12->getDevice()->CreateCommittedResource(&defaultProps, D3D12_HEAP_FLAG_NONE, &defaultDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&defaultBuffer));
+	d3d12->getDevice()->CreateCommittedResource(&defaultProps, D3D12_HEAP_FLAG_NONE, &defaultDesc, D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(&defaultBuffer));
+
+	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(defaultBuffer.Get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_DEST);
+	commandList->ResourceBarrier(1, &barrier);
 
 	commandList->CopyResource(defaultBuffer.Get(), stagingBuffer.Get());
+
+	barrier = CD3DX12_RESOURCE_BARRIER::Transition(defaultBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+	commandList->ResourceBarrier(1, &barrier);
+
 	commandList->Close();
 
 	ID3D12CommandList* lists[] = { commandList.Get() };
