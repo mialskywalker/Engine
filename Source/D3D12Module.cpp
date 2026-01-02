@@ -40,7 +40,6 @@ void D3D12Module::preRender()
 		WaitForSingleObject(event, INFINITE);
 	}
 	commandAllocators[currentBufferIndex]->Reset();
-	commandList->Reset(commandAllocators[currentBufferIndex].Get(), nullptr);
 }
 
 void D3D12Module::postRender()

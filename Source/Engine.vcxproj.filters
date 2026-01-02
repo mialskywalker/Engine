@@ -90,4 +90,12 @@
       <UniqueIdentifier>{2e36eea4-aa89-41a4-9d16-b7024b2598f4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Exercise2VS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Exercise2PS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+  </ItemGroup>
 </Project>

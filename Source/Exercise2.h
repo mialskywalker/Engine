@@ -4,8 +4,16 @@
 
 class Exercise2 : public Module
 {
-	ComPtr<ID3D12Resource> vertexBufferView;
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
+	ComPtr<ID3D12Resource> vertexBuffer;
+	ComPtr<ID3D12RootSignature> rootSignature;
+	ComPtr<ID3D12PipelineState> pso;
 
 public:
 	bool init() override;
+	void render() override;
+
+private:
+	bool createRootSignature();
+	bool createPSO();
 };
