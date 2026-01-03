@@ -1,0 +1,142 @@
+#include "Globals.h"
+#include "Exercise3.h"
+#include "Application.h"
+#include "D3D12Module.h"
+#include "ModuleResources.h"
+#include "ReadData.h"
+#include "DebugDrawPass.h"
+
+Exercise3::~Exercise3()
+{
+	delete debugDraw;
+}
+
+bool Exercise3::init()
+{
+
+	struct Vertex
+	{
+		float x, y, z;
+	};
+
+	Vertex vertices[3] =
+	{
+		{ -1.0f, -1.0f, 0.0f },
+		{  0.0f,  1.0f, 0.0f },
+		{  1.0f, -1.0f, 0.0f }
+	};
+
+	vertexBuffer = app->getResources()->createDefaultBuffer(sizeof(vertices), vertices);
+
+
+	vertexBufferView.BufferLocation = vertexBuffer->GetGPUVirtualAddress();
+	vertexBufferView.SizeInBytes = sizeof(vertices);
+	vertexBufferView.StrideInBytes = sizeof(Vertex);
+
+	debugDraw = new DebugDrawPass(app->getD3D12()->getDevice(), app->getD3D12()->getCommandQueue(), false);
+
+	bool succeed = createRootSignature();
+	succeed = succeed && createPSO();
+
+	return succeed;
+}
+
+void Exercise3::render()
+{
+
+	D3D12Module* d3d12 = app->getD3D12();
+	ID3D12GraphicsCommandList4* commandList = d3d12->getCommandList();
+
+	commandList->Reset(d3d12->getCurrentCommandAllocator(), pso.Get());
+
+	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(d3d12->getCurrentBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	commandList->ResourceBarrier(1, &barrier);
+
+	// mvp matrices
+	Matrix model = Matrix::Identity;
+	Vector3 eye = Vector3(0.0f, 10.0f, 10.0f);
+	Vector3 target = Vector3::Zero;
+	Vector3 up = Vector3::Up;
+
+	Matrix view = Matrix::CreateLookAt(eye, target, up);
+	float aspect = float(d3d12->getWindowWidth()) / float(d3d12->getWindowHeight());
+	float fov = XM_PIDIV4;
+
+	Matrix projection = Matrix::CreatePerspectiveFieldOfView(fov, aspect, 0.1f, 1000.0f);
+	Matrix mvp = (model * view * projection).Transpose();
+
+
+	D3D12_CPU_DESCRIPTOR_HANDLE handle = d3d12->getRTVCPUDescriptorHandle();
+	commandList->OMSetRenderTargets(1, &handle, false, nullptr);
+	float color[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	commandList->ClearRenderTargetView(handle, color, 0, nullptr);
+
+	commandList->SetGraphicsRootSignature(rootSignature.Get());
+	commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+
+	D3D12_VIEWPORT viewport{ 0.0, 0.0, float(d3d12->getWindowWidth()), float(d3d12->getWindowHeight()), 0.0, 1.0 };
+	D3D12_RECT scissor{ 0, 0, d3d12->getWindowWidth(), d3d12->getWindowHeight() };
+
+	commandList->RSSetViewports(1, &viewport);
+	commandList->RSSetScissorRects(1, &scissor);
+	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / sizeof(UINT32), &mvp, 0);
+	commandList->DrawInstanced(3, 1, 0, 0);
+
+	// try debugdraw
+
+	//dd::xzSquareGrid(-10.0f, 10.0f, 0.0f, 1.0f, dd::colors::LightGray);
+	//dd::axisTriad(ddConvert(Matrix::Identity), 0.1f, 1.0f);
+	//debugDraw->record(commandList, viewport.Width, viewport.Height, view, projection);
+
+	barrier = CD3DX12_RESOURCE_BARRIER::Transition(d3d12->getCurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+	commandList->ResourceBarrier(1, &barrier);
+	commandList->Close();
+
+	ID3D12CommandList* lists[] = { commandList };
+	d3d12->getCommandQueue()->ExecuteCommandLists(1, lists);
+
+}
+
+bool Exercise3::createRootSignature()
+{
+	CD3DX12_ROOT_SIGNATURE_DESC signatureDesc = {};
+	CD3DX12_ROOT_PARAMETER rootParameters;
+
+	rootParameters.InitAsConstants(sizeof(Matrix) / sizeof(UINT32), 0);
+	signatureDesc.Init(1, &rootParameters, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
+	ComPtr<ID3DBlob> blob;
+
+	bool succeed = SUCCEEDED(D3D12SerializeRootSignature(&signatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &blob, nullptr));
+	succeed = succeed && SUCCEEDED(app->getD3D12()->getDevice()->CreateRootSignature(0, blob->GetBufferPointer(), blob->GetBufferSize(), IID_PPV_ARGS(&rootSignature)));
+
+	return succeed;
+}
+
+bool Exercise3::createPSO()
+{
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
+	desc.pRootSignature = rootSignature.Get();
+
+	auto dataVS = DX::ReadData(L"Exercise3VS.cso");
+	auto dataPS = DX::ReadData(L"Exercise3PS.cso");
+
+	desc.VS = { dataVS.data(), dataVS.size() };
+	desc.PS = { dataPS.data(), dataPS.size() };
+
+	D3D12_INPUT_ELEMENT_DESC inputLayout[] = { {"MY_POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0} };
+	desc.InputLayout = { inputLayout, sizeof(inputLayout) / sizeof(D3D12_INPUT_ELEMENT_DESC) };
+
+	desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	desc.NumRenderTargets = 1;
+	desc.SampleDesc = { 1, 0 };
+	desc.SampleMask = 0xffffffff;
+	desc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	desc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+
+	bool succeed = SUCCEEDED(app->getD3D12()->getDevice()->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(&pso)));
+
+	return succeed;
+}
