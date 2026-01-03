@@ -66,10 +66,13 @@ void Exercise3::render()
 	Matrix mvp = (model * view * projection).Transpose();
 
 
-	D3D12_CPU_DESCRIPTOR_HANDLE handle = d3d12->getRTVCPUDescriptorHandle();
-	commandList->OMSetRenderTargets(1, &handle, false, nullptr);
+	D3D12_CPU_DESCRIPTOR_HANDLE RTVhandle = d3d12->getRTVCPUDescriptorHandle();
+	D3D12_CPU_DESCRIPTOR_HANDLE DSVhandle = d3d12->getDSVCPUDescriptorHandle();
+
+	commandList->OMSetRenderTargets(1, &RTVhandle, false, &DSVhandle);
 	float color[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	commandList->ClearRenderTargetView(handle, color, 0, nullptr);
+	commandList->ClearDepthStencilView(DSVhandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+	commandList->ClearRenderTargetView(RTVhandle, color, 0, nullptr);
 
 	commandList->SetGraphicsRootSignature(rootSignature.Get());
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
@@ -85,9 +88,9 @@ void Exercise3::render()
 
 	// try debugdraw
 
-	//dd::xzSquareGrid(-10.0f, 10.0f, 0.0f, 1.0f, dd::colors::LightGray);
-	//dd::axisTriad(ddConvert(Matrix::Identity), 0.1f, 1.0f);
-	//debugDraw->record(commandList, viewport.Width, viewport.Height, view, projection);
+	dd::xzSquareGrid(-10.0f, 10.0f, 0.0f, 1.0f, dd::colors::LightGray);
+	dd::axisTriad(ddConvert(Matrix::Identity), 0.1f, 1.0f);
+	debugDraw->record(commandList, viewport.Width, viewport.Height, view, projection);
 
 	barrier = CD3DX12_RESOURCE_BARRIER::Transition(d3d12->getCurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 	commandList->ResourceBarrier(1, &barrier);
@@ -135,6 +138,8 @@ bool Exercise3::createPSO()
 	desc.SampleMask = 0xffffffff;
 	desc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	desc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+	desc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+	desc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 
 	bool succeed = SUCCEEDED(app->getD3D12()->getDevice()->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(&pso)));
 

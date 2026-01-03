@@ -19,7 +19,9 @@ class D3D12Module : public Module
 	ComPtr<ID3D12GraphicsCommandList4> commandList;
 
 	ComPtr<ID3D12DescriptorHeap> RTVdescriptorHeap;
+	ComPtr<ID3D12DescriptorHeap> DSVdescriptorHeap;
 	ComPtr<ID3D12Resource> backBuffers[FRAMES_IN_FLIGHT];
+	ComPtr<ID3D12Resource> depthStencilBuffer;
 	ComPtr<ID3D12Fence> fence;
 
 	HANDLE event = NULL;
@@ -52,6 +54,7 @@ public:
 	unsigned getWindowHeight() { return this->windowHeight; }
 
 	D3D12_CPU_DESCRIPTOR_HANDLE getRTVCPUDescriptorHandle();
+	D3D12_CPU_DESCRIPTOR_HANDLE getDSVCPUDescriptorHandle();
 
 private:
 
@@ -66,6 +69,9 @@ private:
 	bool createCommandAllocators();
 	bool createCommandList();
 	bool createFence();
+	bool createDepthStencilBuffer();
+	bool createDSVDescriptorHeap();
+	void createDSV();
 
 	unsigned getWindowSize(unsigned& width, unsigned& height);
 };

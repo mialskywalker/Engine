@@ -27,6 +27,9 @@ bool D3D12Module::init()
 	succeed = succeed && createCommandAllocators();
 	succeed = succeed && createCommandList();
 	succeed = succeed && createFence();
+	succeed = succeed && createDepthStencilBuffer();
+	succeed = succeed && createDSVDescriptorHeap();
+	createDSV();
 
 	return succeed;
 }
@@ -187,6 +190,40 @@ bool D3D12Module::createFence()
 	return succeed;
 }
 
+bool D3D12Module::createDepthStencilBuffer()
+{
+	CD3DX12_HEAP_PROPERTIES props = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	CD3DX12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, windowWidth, windowHeight, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+
+	D3D12_CLEAR_VALUE clear = {};
+	clear.Format = DXGI_FORMAT_D32_FLOAT;
+	clear.DepthStencil.Depth = 1.0f;
+	clear.DepthStencil.Stencil = 0;
+
+	bool succeed = SUCCEEDED(device->CreateCommittedResource(&props, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_DEPTH_WRITE, &clear, IID_PPV_ARGS(&depthStencilBuffer)));
+
+	return succeed;
+}
+
+bool D3D12Module::createDSVDescriptorHeap()
+{
+	D3D12_DESCRIPTOR_HEAP_DESC desc = {};
+	desc.NumDescriptors = 1;
+	desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+	desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+
+	bool succeed = SUCCEEDED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&DSVdescriptorHeap)));
+
+	return succeed;
+}
+
+void D3D12Module::createDSV()
+{
+	D3D12_CPU_DESCRIPTOR_HANDLE handle(DSVdescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+	
+	device->CreateDepthStencilView(depthStencilBuffer.Get(), nullptr, handle);
+}
+
 unsigned D3D12Module::getWindowSize(unsigned& width, unsigned& height)
 {
 	RECT rect = {};
@@ -201,4 +238,9 @@ unsigned D3D12Module::getWindowSize(unsigned& width, unsigned& height)
 D3D12_CPU_DESCRIPTOR_HANDLE D3D12Module::getRTVCPUDescriptorHandle()
 {
 	return CD3DX12_CPU_DESCRIPTOR_HANDLE(RTVdescriptorHeap->GetCPUDescriptorHandleForHeapStart(), currentBufferIndex, device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV));
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE D3D12Module::getDSVCPUDescriptorHandle()
+{
+	return DSVdescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 }
