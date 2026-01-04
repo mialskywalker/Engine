@@ -47,7 +47,7 @@ void D3D12Module::preRender()
 
 void D3D12Module::postRender()
 {
-	swapChain->Present(0, 0);
+	swapChain->Present(vsync, 0);
 	fenceValues[currentBufferIndex] = ++fenceValue;
 	commandQueue->Signal(fence.Get(), fenceValue);
 }

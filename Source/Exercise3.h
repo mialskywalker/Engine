@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Module.h"
+#include "ImGuiPass.h"
 
 class DebugDrawPass;
 
@@ -10,13 +11,15 @@ class Exercise3 : public Module
 	ComPtr<ID3D12Resource> vertexBuffer;
 	ComPtr<ID3D12RootSignature> rootSignature;
 	ComPtr<ID3D12PipelineState> pso;
-	DebugDrawPass* debugDraw;
+	DebugDrawPass* debugDraw = nullptr;
+	ImGuiPass* imgui = nullptr;
 
 public:
 	~Exercise3();
 
 	bool init() override;
 	void render() override;
+	void preRender() override;
 
 private:
 	bool createRootSignature();

@@ -6,6 +6,7 @@
 #include "ReadData.h"
 #include "DebugDrawPass.h"
 #include "CameraModule.h"
+#include "ModuleEditor.h"
 
 Exercise3::~Exercise3()
 {
@@ -35,11 +36,17 @@ bool Exercise3::init()
 	vertexBufferView.StrideInBytes = sizeof(Vertex);
 
 	debugDraw = new DebugDrawPass(app->getD3D12()->getDevice(), app->getD3D12()->getCommandQueue(), false);
+	imgui = app->getEditor()->getImGui();
 
 	bool succeed = createRootSignature();
 	succeed = succeed && createPSO();
 
 	return succeed;
+}
+
+void Exercise3::preRender()
+{
+	imgui->startFrame();
 }
 
 void Exercise3::render()
@@ -48,6 +55,9 @@ void Exercise3::render()
 	D3D12Module* d3d12 = app->getD3D12();
 	ID3D12GraphicsCommandList4* commandList = d3d12->getCommandList();
 	CameraModule* camera = app->getCamera();
+
+	ImGui::ShowDemoWindow();
+	app->getEditor()->fps();
 
 	commandList->Reset(d3d12->getCurrentCommandAllocator(), pso.Get());
 
@@ -80,6 +90,8 @@ void Exercise3::render()
 	dd::xzSquareGrid(-10.0f, 10.0f, 0.0f, 1.0f, dd::colors::LightGray);
 	dd::axisTriad(ddConvert(Matrix::Identity), 0.1f, 1.0f);
 	debugDraw->record(commandList, viewport.Width, viewport.Height, camera->getView(), camera->getProjection());
+
+	imgui->record(commandList);
 
 	barrier = CD3DX12_RESOURCE_BARRIER::Transition(d3d12->getCurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 	commandList->ResourceBarrier(1, &barrier);

@@ -32,6 +32,8 @@ class D3D12Module : public Module
 	uint64_t fenceValues[FRAMES_IN_FLIGHT] = { 0, 0, 0 };
 	uint64_t fenceValue = 0;
 
+	bool vsync = false;
+
 public:
 
 	D3D12Module(HWND hwnd);
@@ -50,12 +52,16 @@ public:
 	ID3D12CommandAllocator* getCurrentCommandAllocator() { return commandAllocators[currentBufferIndex].Get(); }
 	ID3D12GraphicsCommandList4* getCommandList() { return commandList.Get(); }
 	ID3D12Resource* getCurrentBackBuffer() { return backBuffers[currentBufferIndex].Get(); }
+	HWND getHwnd() { return hWnd; }
+	bool getVsync() { return this->vsync; }
 
 	unsigned getWindowWidth() { return this->windowWidth; }
 	unsigned getWindowHeight() { return this->windowHeight; }
 
 	D3D12_CPU_DESCRIPTOR_HANDLE getRTVCPUDescriptorHandle();
 	D3D12_CPU_DESCRIPTOR_HANDLE getDSVCPUDescriptorHandle();
+
+	void setVSync(bool value) { vsync = value; }
 
 private:
 

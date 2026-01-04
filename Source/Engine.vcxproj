@@ -184,6 +184,7 @@
     <ClInclude Include="ImGuiPass.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Module.h" />
+    <ClInclude Include="ModuleEditor.h" />
     <ClInclude Include="ModuleInput.h" />
     <ClInclude Include="ModuleResources.h" />
     <ClInclude Include="Mouse.h" />
@@ -279,6 +280,7 @@
     </ClCompile>
     <ClCompile Include="ImGuiPass.cpp" />
     <ClCompile Include="Keyboard.cpp" />
+    <ClCompile Include="ModuleEditor.cpp" />
     <ClCompile Include="ModuleInput.cpp" />
     <ClCompile Include="ModuleResources.cpp" />
     <ClCompile Include="Mouse.cpp" />
