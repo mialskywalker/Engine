@@ -235,6 +235,35 @@ unsigned D3D12Module::getWindowSize(unsigned& width, unsigned& height)
 	return width, height;
 }
 
+void D3D12Module::resize()
+{
+	unsigned width, height;
+	getWindowSize(width, height);
+
+	if (windowWidth != width || windowHeight != height)
+	{
+		windowWidth = width;
+		windowHeight = height;
+		flush();
+
+		for (unsigned i = 0; i < FRAMES_IN_FLIGHT; ++i)
+		{
+			backBuffers[i].Reset();
+			fenceValues[i] = 0;
+		}
+
+		DXGI_SWAP_CHAIN_DESC desc = {};
+		swapChain->GetDesc(&desc);
+
+		swapChain->ResizeBuffers(FRAMES_IN_FLIGHT, windowWidth, windowHeight, desc.BufferDesc.Format, desc.Flags);
+
+		createRTV();
+		createDepthStencilBuffer();
+		createDSV();
+	}
+
+}
+
 D3D12_CPU_DESCRIPTOR_HANDLE D3D12Module::getRTVCPUDescriptorHandle()
 {
 	return CD3DX12_CPU_DESCRIPTOR_HANDLE(RTVdescriptorHeap->GetCPUDescriptorHandleForHeapStart(), currentBufferIndex, device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV));

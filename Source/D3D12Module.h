@@ -41,6 +41,7 @@ public:
 	void preRender() override;
 	void postRender() override;
 	void flush();
+	void resize();
 
 	IDXGIFactory6* getFactory() { return factory.Get(); }
 	IDXGIAdapter4* getAdapter() { return adapter.Get(); }
