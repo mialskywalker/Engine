@@ -86,5 +86,6 @@ void CameraModule::update()
 	view = Matrix::CreateFromQuaternion(inverse);
 	view.Translation(Vector3::Transform(-currentPosition, inverse));
 
+	projection = Matrix::CreatePerspectiveFieldOfView(fov, aspectRatio, 0.1f, 1000.0f);
 	mvp = (model * view * projection).Transpose();
 }
