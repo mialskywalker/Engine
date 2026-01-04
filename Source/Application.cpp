@@ -3,6 +3,7 @@
 #include "ModuleInput.h"
 #include "D3D12Module.h"
 #include "ModuleResources.h"
+#include "CameraModule.h"
 #include "Exercise1.h"
 #include "Exercise2.h"
 #include "Exercise3.h"
@@ -13,6 +14,7 @@ Application::Application(int argc, wchar_t** argv, void* hWnd)
     modules.push_back(new ModuleInput((HWND)hWnd));
     modules.push_back(d3d12 = new D3D12Module((HWND)hWnd));
     modules.push_back(resources = new ModuleResources());
+    modules.push_back(camera = new CameraModule());
     //modules.push_back(new Exercise1());
     //modules.push_back(new Exercise2());
     modules.push_back(new Exercise3());

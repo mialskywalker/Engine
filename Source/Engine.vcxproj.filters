@@ -34,6 +34,9 @@
     <ClCompile Include="Exercise3.cpp">
       <Filter>Exercises</Filter>
     </ClCompile>
+    <ClCompile Include="CameraModule.cpp">
+      <Filter>Modules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdParty\imgui-1.89.8\backends\imgui_impl_win32.h" />
@@ -73,6 +76,9 @@
     </ClInclude>
     <ClInclude Include="Exercise3.h">
       <Filter>Exercises</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraModule.h">
+      <Filter>Modules</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

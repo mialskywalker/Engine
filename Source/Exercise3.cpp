@@ -5,6 +5,7 @@
 #include "ModuleResources.h"
 #include "ReadData.h"
 #include "DebugDrawPass.h"
+#include "CameraModule.h"
 
 Exercise3::~Exercise3()
 {
@@ -46,25 +47,14 @@ void Exercise3::render()
 
 	D3D12Module* d3d12 = app->getD3D12();
 	ID3D12GraphicsCommandList4* commandList = d3d12->getCommandList();
+	CameraModule* camera = app->getCamera();
 
 	commandList->Reset(d3d12->getCurrentCommandAllocator(), pso.Get());
 
 	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(d3d12->getCurrentBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	commandList->ResourceBarrier(1, &barrier);
 
-	// mvp matrices
-	Matrix model = Matrix::Identity;
-	Vector3 eye = Vector3(0.0f, 10.0f, 10.0f);
-	Vector3 target = Vector3::Zero;
-	Vector3 up = Vector3::Up;
-
-	Matrix view = Matrix::CreateLookAt(eye, target, up);
-	float aspect = float(d3d12->getWindowWidth()) / float(d3d12->getWindowHeight());
-	float fov = XM_PIDIV4;
-
-	Matrix projection = Matrix::CreatePerspectiveFieldOfView(fov, aspect, 0.1f, 1000.0f);
-	Matrix mvp = (model * view * projection).Transpose();
-
+	Matrix mvp = camera->getMVP();
 
 	D3D12_CPU_DESCRIPTOR_HANDLE RTVhandle = d3d12->getRTVCPUDescriptorHandle();
 	D3D12_CPU_DESCRIPTOR_HANDLE DSVhandle = d3d12->getDSVCPUDescriptorHandle();
@@ -86,11 +76,10 @@ void Exercise3::render()
 	commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / sizeof(UINT32), &mvp, 0);
 	commandList->DrawInstanced(3, 1, 0, 0);
 
-	// try debugdraw
 
 	dd::xzSquareGrid(-10.0f, 10.0f, 0.0f, 1.0f, dd::colors::LightGray);
 	dd::axisTriad(ddConvert(Matrix::Identity), 0.1f, 1.0f);
-	debugDraw->record(commandList, viewport.Width, viewport.Height, view, projection);
+	debugDraw->record(commandList, viewport.Width, viewport.Height, camera->getView(), camera->getProjection());
 
 	barrier = CD3DX12_RESOURCE_BARRIER::Transition(d3d12->getCurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 	commandList->ResourceBarrier(1, &barrier);
