@@ -4,17 +4,27 @@
 
 class CameraModule : public Module
 {
-	Matrix model;
-	Vector3 eye;
-	Vector3 target;
-	Vector3 up;
+	const float MOVE_SPEED = 0.01f;
 
+	Matrix model;
 	Matrix view;
-	float aspectRatio;
-	float fov;
+	float aspectRatio = 0.0f;
+	float fov = 0.0f;
 
 	Matrix projection;
 	Matrix mvp;
+
+	Vector3 startingPosition;
+	Vector3 currentPosition;
+
+	Quaternion startingRotation;
+	Quaternion currentRotation;
+
+	float yaw = 0.0f;
+	float pitch = 0.0f;
+
+	float mousePosX = 0.0f;
+	float mousePosY = 0.0f;
 
 public:
 	CameraModule();
@@ -23,9 +33,10 @@ public:
 	bool init() override;
 	void update() override;
 
-	float getFOV() { return this->fov; }
-	float getAspectRatio() { return this->aspectRatio; }
-	Matrix getView() { return this->view; }
-	Matrix getProjection() { return this->projection; }
-	Matrix getMVP() { return this->mvp; }
+	const float getFOV() { return this->fov; }
+	const float getAspectRatio() { return this->aspectRatio; }
+	const Matrix getView() { return this->view; }
+	const Matrix getProjection() { return this->projection; }
+	const Matrix getMVP() { return this->mvp; }
+	const float getMoveSpeed() { return this->MOVE_SPEED; }
 };
