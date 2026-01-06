@@ -87,7 +87,6 @@ ComPtr<ID3D12Resource> ModuleResources::createDefaultBuffer(size_t bufferSize, v
 
 ComPtr<ID3D12Resource> ModuleResources::createTextureFromFile(const std::filesystem::path& filePath)
 {
-	// TODO when only 1 mipmap
 
 	D3D12Module* d3d12 = app->getD3D12();
 
@@ -103,36 +102,71 @@ ComPtr<ID3D12Resource> ModuleResources::createTextureFromFile(const std::filesys
 	}
 	
 	ComPtr<ID3D12Resource> texture;
-
 	const DirectX::TexMetadata metaData = image.GetMetadata();
-
+	D3D12_RESOURCE_DESC textureDesc;
 	CD3DX12_HEAP_PROPERTIES textureHeap = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-	D3D12_RESOURCE_DESC textureDesc = CD3DX12_RESOURCE_DESC::Tex2D(metaData.format, UINT64(metaData.width), UINT(metaData.height), UINT16(metaData.arraySize), UINT16(metaData.mipLevels));
-	d3d12->getDevice()->CreateCommittedResource(&textureHeap, D3D12_HEAP_FLAG_NONE, &textureDesc, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&texture));
-
-
-	UINT64 size = GetRequiredIntermediateSize(texture.Get(), 0, image.GetImageCount());
+	UINT64 size;
 	ComPtr<ID3D12Resource> stagingBuffer;
-	D3D12_RESOURCE_DESC stagingDesc = CD3DX12_RESOURCE_DESC::Buffer(size);
-	CD3DX12_HEAP_PROPERTIES stagingpProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+	D3D12_RESOURCE_DESC stagingDesc;
+	CD3DX12_HEAP_PROPERTIES stagingProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 
-	d3d12->getDevice()->CreateCommittedResource(&stagingpProps, D3D12_HEAP_FLAG_NONE, &stagingDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&stagingBuffer));
-
-	std::vector<D3D12_SUBRESOURCE_DATA> subData;
-	subData.reserve(size);
-
-	for (size_t item = 0; item < metaData.arraySize; ++item)
+	if (metaData.mipLevels == 1)
 	{
-		for (size_t level = 0; level < metaData.mipLevels; ++level)
+		DirectX::ScratchImage mipImage;
+		HRESULT hr = GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), TEX_FILTER_DEFAULT, 0, mipImage);
+		const DirectX::TexMetadata mipMetaData = mipImage.GetMetadata();
+		textureDesc = CD3DX12_RESOURCE_DESC::Tex2D(mipMetaData.format, UINT64(mipMetaData.width), UINT(mipMetaData.height), UINT16(mipMetaData.arraySize), UINT16(mipMetaData.mipLevels));
+
+		d3d12->getDevice()->CreateCommittedResource(&textureHeap, D3D12_HEAP_FLAG_NONE, &textureDesc, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&texture));
+
+		size = GetRequiredIntermediateSize(texture.Get(), 0, mipImage.GetImageCount());
+		
+		stagingDesc = CD3DX12_RESOURCE_DESC::Buffer(size);
+
+		d3d12->getDevice()->CreateCommittedResource(&stagingProps, D3D12_HEAP_FLAG_NONE, &stagingDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&stagingBuffer));
+
+		std::vector<D3D12_SUBRESOURCE_DATA> subData;
+		subData.reserve(size);
+
+		for (size_t item = 0; item < mipMetaData.arraySize; ++item)
 		{
-			const DirectX::Image* subImg = image.GetImage(level, item, 0);
-			D3D12_SUBRESOURCE_DATA data = { subImg->pixels, subImg->rowPitch, subImg->slicePitch };
-			subData.push_back(data);
+			for (size_t level = 0; level < mipMetaData.mipLevels; ++level)
+			{
+				const DirectX::Image* subImg = mipImage.GetImage(level, item, 0);
+				D3D12_SUBRESOURCE_DATA data = { subImg->pixels, subImg->rowPitch, subImg->slicePitch };
+				subData.push_back(data);
+			}
 		}
+
+		UpdateSubresources(commandList.Get(), texture.Get(), stagingBuffer.Get(), 0, 0, UINT(mipImage.GetImageCount()), subData.data());
 	}
+	else
+	{
+		textureDesc = CD3DX12_RESOURCE_DESC::Tex2D(metaData.format, UINT64(metaData.width), UINT(metaData.height), UINT16(metaData.arraySize), UINT16(metaData.mipLevels));
+		d3d12->getDevice()->CreateCommittedResource(&textureHeap, D3D12_HEAP_FLAG_NONE, &textureDesc, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&texture));
 
-	UpdateSubresources(commandList.Get(), texture.Get(), stagingBuffer.Get(), 0, 0, UINT(image.GetImageCount()), subData.data());
+		size = GetRequiredIntermediateSize(texture.Get(), 0, image.GetImageCount());
 
+		stagingDesc = CD3DX12_RESOURCE_DESC::Buffer(size);
+
+		d3d12->getDevice()->CreateCommittedResource(&stagingProps, D3D12_HEAP_FLAG_NONE, &stagingDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&stagingBuffer));
+
+		std::vector<D3D12_SUBRESOURCE_DATA> subData;
+		subData.reserve(size);
+
+		for (size_t item = 0; item < metaData.arraySize; ++item)
+		{
+			for (size_t level = 0; level < metaData.mipLevels; ++level)
+			{
+				const DirectX::Image* subImg = image.GetImage(level, item, 0);
+				D3D12_SUBRESOURCE_DATA data = { subImg->pixels, subImg->rowPitch, subImg->slicePitch };
+				subData.push_back(data);
+			}
+		}
+
+		UpdateSubresources(commandList.Get(), texture.Get(), stagingBuffer.Get(), 0, 0, UINT(image.GetImageCount()), subData.data());
+	}
+	
 	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(texture.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 	commandList->ResourceBarrier(1, &barrier);
 

@@ -15,6 +15,7 @@ class Exercise4 : public Module
 	DebugDrawPass* debugDraw = nullptr;
 	ImGuiPass* imgui = nullptr;
 	unsigned index = 0;
+	int samplerIndex = 0;
 
 public:
 	Exercise4();

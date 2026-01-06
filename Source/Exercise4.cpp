@@ -8,6 +8,7 @@
 #include "CameraModule.h"
 #include "ModuleEditor.h"
 #include "ModuleShaderDescriptors.h"
+#include "ModuleSampler.h"
 
 Exercise4::Exercise4() {}
 
@@ -65,9 +66,12 @@ void Exercise4::render()
 	ModuleShaderDescriptors* descriptors = app->getDescriptors();
 	ID3D12GraphicsCommandList4* commandList = d3d12->getCommandList();
 	CameraModule* camera = app->getCamera();
+	ModuleSampler* samplers = app->getSamplers();
 
 	ImGui::ShowDemoWindow();
 	app->getEditor()->fps();
+
+	ImGui::Combo("Sampler", &samplerIndex, "Billinear Filtering Wrap\0Point Filtering Wrap\0Billinear Filtering Clamp\0Point Filtering Clamp", 4);
 
 	commandList->Reset(d3d12->getCurrentCommandAllocator(), pso.Get());
 
@@ -95,9 +99,10 @@ void Exercise4::render()
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	commandList->SetGraphicsRoot32BitConstants(0, sizeof(Matrix) / sizeof(UINT32), &mvp, 0);
 
-	ID3D12DescriptorHeap* dh[] = { descriptors->getHeap() };
-	commandList->SetDescriptorHeaps(1, dh);
+	ID3D12DescriptorHeap* dh[] = { descriptors->getHeap(), samplers->getHeap() };
+	commandList->SetDescriptorHeaps(2, dh);
 	commandList->SetGraphicsRootDescriptorTable(1, descriptors->getGPUHandle(index));
+	commandList->SetGraphicsRootDescriptorTable(2, samplers->getGPUHandle(samplerIndex));
 	commandList->DrawInstanced(6, 1, 0, 0);
 
 
@@ -119,21 +124,26 @@ void Exercise4::render()
 bool Exercise4::createRootSignature()
 {
 	CD3DX12_ROOT_SIGNATURE_DESC signatureDesc = {};
-	CD3DX12_ROOT_PARAMETER rootParameters[2] = {};
-	CD3DX12_DESCRIPTOR_RANGE tableRange;
+	CD3DX12_ROOT_PARAMETER rootParameters[3] = {};
+	CD3DX12_DESCRIPTOR_RANGE tableRange, sampRange;
 
 	tableRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0);
+	sampRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0, 0);
+
 	rootParameters[0].InitAsConstants((sizeof(Matrix) / sizeof(UINT32)), 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
 	rootParameters[1].InitAsDescriptorTable(1, &tableRange, D3D12_SHADER_VISIBILITY_PIXEL);
+	rootParameters[2].InitAsDescriptorTable(1, &sampRange, D3D12_SHADER_VISIBILITY_PIXEL);
 
-	CD3DX12_STATIC_SAMPLER_DESC linearWrapSampler;
+	/*CD3DX12_STATIC_SAMPLER_DESC linearWrapSampler;
 	linearWrapSampler.Init(0,
 		D3D12_FILTER_MIN_MAG_MIP_LINEAR,
 		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
 		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
 		D3D12_TEXTURE_ADDRESS_MODE_WRAP);
 
-	signatureDesc.Init(2, rootParameters, 1, &linearWrapSampler, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+	signatureDesc.Init(2, rootParameters, 1, &linearWrapSampler, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);*/
+
+	signatureDesc.Init(3, rootParameters, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 	ComPtr<ID3DBlob> blob;
 
