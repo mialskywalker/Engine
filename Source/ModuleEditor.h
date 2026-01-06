@@ -9,11 +9,14 @@ class ModuleEditor : public Module
 {
 	ImGuiPass* imGuiPass = nullptr;
 
-	static const int HISTORY_SIZE = 1000;
+	static const int HISTORY_SIZE = 100;
 	float fpsHistory[HISTORY_SIZE] = {};
 	float msHistory[HISTORY_SIZE] = {};
 	int historyIndex = 0;
 	bool vsync = false;
+	bool camera = true;
+	
+	float fov = 1.0f;
 
 public:
 	ModuleEditor();

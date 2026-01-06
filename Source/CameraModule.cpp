@@ -25,7 +25,6 @@ bool CameraModule::init()
 	view.Translation(-startingPosition);
 
 	aspectRatio = float(d3d12->getWindowWidth()) / float(d3d12->getWindowHeight());
-	fov = 1;
 
 	projection = Matrix::CreatePerspectiveFieldOfView(fov, aspectRatio, 0.1f, 1000.0f);
 	mvp = (model * view * projection).Transpose();
@@ -49,27 +48,42 @@ void CameraModule::update()
 
 	float time = app->getElapsedMilis();
 
-	if (mouseState.rightButton)
+	if (cameraEnabled)
 	{
-		rotate.x = float(mousePosX - mouseState.x) * 0.15f;
-		rotate.y = float(mousePosY - mouseState.y) * 0.15f;
+		int mouseScrollWheel = mouseState.scrollWheelValue;
 
-		if (keyState.W) currentPosition -= Vector3::Transform(Vector3(0, 0, 1), currentRotation) * MOVE_SPEED * time;
-		if (keyState.S) currentPosition += Vector3::Transform(Vector3(0, 0, 1), currentRotation) * MOVE_SPEED * time;
-		if (keyState.A) currentPosition -= Vector3::Transform(Vector3(1, 0, 0), currentRotation) * MOVE_SPEED * time;
-		if (keyState.D) currentPosition += Vector3::Transform(Vector3(1, 0, 0), currentRotation) * MOVE_SPEED * time;
-		if (keyState.Q) currentPosition -= Vector3::Transform(Vector3(0, 1, 0), currentRotation) * MOVE_SPEED * time;
-		if (keyState.E) currentPosition += Vector3::Transform(Vector3(0, 1, 0), currentRotation) * MOVE_SPEED * time;
+		if (mouseState.rightButton)
+		{
+			rotate.x = float(mousePosX - mouseState.x) * 0.15f;
+			rotate.y = float(mousePosY - mouseState.y) * 0.15f;
 
-	}
+			if (keyState.LeftShift)
+				speed = 2;
+			else
+				speed = 1;
 
-	if (keyState.F)
-	{
-		currentPosition = startingPosition;
-		currentRotation = startingRotation;
-		yaw = 0.0f;
-		pitch = 0.0f;
-		return;
+			if (keyState.W) currentPosition -= Vector3::Transform(Vector3(0, 0, 1), currentRotation) * MOVE_SPEED * time * speed;
+			if (keyState.S) currentPosition += Vector3::Transform(Vector3(0, 0, 1), currentRotation) * MOVE_SPEED * time * speed;
+			if (keyState.A) currentPosition -= Vector3::Transform(Vector3(1, 0, 0), currentRotation) * MOVE_SPEED * time * speed;
+			if (keyState.D) currentPosition += Vector3::Transform(Vector3(1, 0, 0), currentRotation) * MOVE_SPEED * time * speed;
+			if (keyState.Q) currentPosition -= Vector3::Transform(Vector3(0, 1, 0), currentRotation) * MOVE_SPEED * time * speed;
+			if (keyState.E) currentPosition += Vector3::Transform(Vector3(0, 1, 0), currentRotation) * MOVE_SPEED * time * speed;
+
+		}
+
+		if (keyState.F)
+		{
+			currentPosition = startingPosition;
+			currentRotation = startingRotation;
+			yaw = 0.0f;
+			pitch = 0.0f;
+			return;
+		}
+
+		if (mouseScrollWheel > prevWheel) currentPosition -= Vector3::Transform(Vector3(0, 0, 1), currentRotation);
+
+		if (mouseScrollWheel < prevWheel) currentPosition += Vector3::Transform(Vector3(0, 0, 1), currentRotation);
+		prevWheel = mouseScrollWheel;
 	}
 
 	mousePosX = mouseState.x;
@@ -88,4 +102,14 @@ void CameraModule::update()
 
 	projection = Matrix::CreatePerspectiveFieldOfView(fov, aspectRatio, 0.1f, 1000.0f);
 	mvp = (model * view * projection).Transpose();
+}
+
+void CameraModule::setCameraEnabled(bool enabled)
+{
+	this->cameraEnabled = enabled;
+}
+
+void CameraModule::setCameraFOV(float FOV)
+{
+	this->fov = FOV;
 }

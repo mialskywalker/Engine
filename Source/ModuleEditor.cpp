@@ -4,6 +4,7 @@
 #include "ImGuiPass.h"
 #include "Application.h"
 #include "D3D12Module.h"
+#include "CameraModule.h"
 
 ModuleEditor::ModuleEditor() {}
 
@@ -29,14 +30,31 @@ void ModuleEditor::update()
 
     if (app->getD3D12()->getVsync() != vsync)
         app->getD3D12()->setVSync(vsync);
+    
+    if (app->getCamera()->getCameraEnabled() != camera)
+        app->getCamera()->setCameraEnabled(camera);
+
+    if (app->getCamera()->getFOV() != fov)
+        app->getCamera()->setCameraFOV(fov);
 }
 
 void ModuleEditor::fps()
 {
 	ImGui::Begin("Configuration");
 	ImGui::SetNextWindowSize(ImVec2(480, 720), ImGuiCond_Always);
+    char title[25];
 
     ImGui::Text("Options");
+
+    if (ImGui::CollapsingHeader("Camera"))
+    {
+        ImGui::Checkbox("Camera Free Look", &camera);
+        sprintf_s(title, "FOV");
+        ImGui::SliderFloat(title, &fov, 0.5f, 2.0f);
+        sprintf_s(title, "Reset FOV");
+        if (ImGui::Button(title, ImVec2(96, 32)))
+            fov = 1.0f;
+    }
 
     if (ImGui::CollapsingHeader("Rendering"))
     {
@@ -51,12 +69,11 @@ void ModuleEditor::fps()
 
         int lastIndex = (historyIndex - 1 + HISTORY_SIZE) % HISTORY_SIZE;
 
-        char title[25];
         sprintf_s(title, "Framerate: %.1f", fpsHistory[lastIndex]);
         ImGui::PlotHistogram("##framerate", fpsHistory, HISTORY_SIZE, historyIndex, title, 0.0f, 3000.0f, ImVec2(310, 100));
 
         sprintf_s(title, "Milliseconds: %.1f", msHistory[lastIndex]);
-        ImGui::PlotHistogram("##milliseconds", msHistory, HISTORY_SIZE, historyIndex, title, 0.0f, 30.0f, ImVec2(310, 100));
+        ImGui::PlotLines("##milliseconds", msHistory, HISTORY_SIZE, historyIndex, title, 0.0f, 30.0f, ImVec2(310, 100));
     }
 
     ImGui::End();

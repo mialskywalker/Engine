@@ -5,11 +5,12 @@
 class CameraModule : public Module
 {
 	const float MOVE_SPEED = 0.01f;
+	bool cameraEnabled = true;
 
 	Matrix model;
 	Matrix view;
 	float aspectRatio = 0.0f;
-	float fov = 0.0f;
+	float fov = 1.0f;
 
 	Matrix projection;
 	Matrix mvp;
@@ -26,6 +27,9 @@ class CameraModule : public Module
 	float mousePosX = 0.0f;
 	float mousePosY = 0.0f;
 
+	int speed = 1;
+	int prevWheel = 0;
+
 public:
 	CameraModule();
 	~CameraModule();
@@ -33,10 +37,14 @@ public:
 	bool init() override;
 	void update() override;
 
+	void setCameraEnabled(bool enabled);
+	void setCameraFOV(float FOV);
+
 	const float getFOV() { return this->fov; }
 	const float getAspectRatio() { return this->aspectRatio; }
 	const Matrix getView() { return this->view; }
 	const Matrix getProjection() { return this->projection; }
 	const Matrix getMVP() { return this->mvp; }
 	const float getMoveSpeed() { return this->MOVE_SPEED; }
+	const bool getCameraEnabled() { return this->cameraEnabled; }
 };
