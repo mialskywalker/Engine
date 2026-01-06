@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Module.h"
+#include <filesystem>
 
 class ModuleResources : public Module
 {
@@ -15,4 +16,5 @@ public:
 
 	ComPtr<ID3D12Resource> createUploadBuffer(size_t bufferSize, void* data);
 	ComPtr<ID3D12Resource> createDefaultBuffer(size_t bufferSize, void* data);
+	ComPtr<ID3D12Resource> createTextureFromFile(const std::filesystem::path& filePath);
 };

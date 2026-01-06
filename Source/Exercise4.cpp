@@ -1,5 +1,5 @@
 #include "Globals.h"
-#include "Exercise3.h"
+#include "Exercise4.h"
 #include "Application.h"
 #include "D3D12Module.h"
 #include "ModuleResources.h"
@@ -7,31 +7,38 @@
 #include "DebugDrawPass.h"
 #include "CameraModule.h"
 #include "ModuleEditor.h"
+#include "ModuleShaderDescriptors.h"
 
-Exercise3::Exercise3() {}
+Exercise4::Exercise4() {}
 
-Exercise3::~Exercise3()
+Exercise4::~Exercise4()
 {
 	delete debugDraw;
 }
 
-bool Exercise3::init()
+bool Exercise4::init()
 {
 
 	struct Vertex
 	{
-		float x, y, z;
+		Vector3 position;
+		Vector2 uv;
 	};
 
-	Vertex vertices[3] =
+	Vertex vertices[6] =
 	{
-		{ -1.0f, -1.0f, 0.0f },
-		{  0.0f,  1.0f, 0.0f },
-		{  1.0f, -1.0f, 0.0f }
+		{ Vector3(-1.0f, -1.0f, 0.0f), Vector2(-0.2f, 1.2f) },
+		{ Vector3(-1.0f, 1.0f, 0.0f), Vector2(-0.2f, -0.2f) },
+		{ Vector3(1.0f, 1.0f, 0.0f), Vector2(1.2f, -0.2f) },
+		{ Vector3(-1.0f, -1.0f, 0.0f), Vector2(-0.2f, 1.2f) },
+		{ Vector3(1.0f, 1.0f, 0.0f), Vector2(1.2f, -0.2f) },
+		{ Vector3(1.0f, -1.0f, 0.0f), Vector2(1.2f, 1.2f) }
 	};
+
+	texture = app->getResources()->createTextureFromFile(std::wstring(L"Assets/Textures/dog.dds"));
+	index = app->getDescriptors()->createSRV(texture.Get());	
 
 	vertexBuffer = app->getResources()->createDefaultBuffer(sizeof(vertices), vertices);
-
 
 	vertexBufferView.BufferLocation = vertexBuffer->GetGPUVirtualAddress();
 	vertexBufferView.SizeInBytes = sizeof(vertices);
@@ -46,15 +53,16 @@ bool Exercise3::init()
 	return succeed;
 }
 
-void Exercise3::preRender()
+void Exercise4::preRender()
 {
 	imgui->startFrame();
 }
 
-void Exercise3::render()
+void Exercise4::render()
 {
 
 	D3D12Module* d3d12 = app->getD3D12();
+	ModuleShaderDescriptors* descriptors = app->getDescriptors();
 	ID3D12GraphicsCommandList4* commandList = d3d12->getCommandList();
 	CameraModule* camera = app->getCamera();
 
@@ -72,7 +80,7 @@ void Exercise3::render()
 	D3D12_CPU_DESCRIPTOR_HANDLE DSVhandle = d3d12->getDSVCPUDescriptorHandle();
 
 	commandList->OMSetRenderTargets(1, &RTVhandle, false, &DSVhandle);
-	float color[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	float color[] = { 0.1f, 0.1f, 0.1f, 1.0f };
 	commandList->ClearDepthStencilView(DSVhandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 	commandList->ClearRenderTargetView(RTVhandle, color, 0, nullptr);
 
@@ -85,8 +93,12 @@ void Exercise3::render()
 	commandList->RSSetViewports(1, &viewport);
 	commandList->RSSetScissorRects(1, &scissor);
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / sizeof(UINT32), &mvp, 0);
-	commandList->DrawInstanced(3, 1, 0, 0);
+	commandList->SetGraphicsRoot32BitConstants(0, sizeof(Matrix) / sizeof(UINT32), &mvp, 0);
+
+	ID3D12DescriptorHeap* dh[] = { descriptors->getHeap() };
+	commandList->SetDescriptorHeaps(1, dh);
+	commandList->SetGraphicsRootDescriptorTable(1, descriptors->getGPUHandle(index));
+	commandList->DrawInstanced(6, 1, 0, 0);
 
 
 	dd::xzSquareGrid(-10.0f, 10.0f, 0.0f, 1.0f, dd::colors::LightGray);
@@ -104,13 +116,24 @@ void Exercise3::render()
 
 }
 
-bool Exercise3::createRootSignature()
+bool Exercise4::createRootSignature()
 {
 	CD3DX12_ROOT_SIGNATURE_DESC signatureDesc = {};
-	CD3DX12_ROOT_PARAMETER rootParameters;
+	CD3DX12_ROOT_PARAMETER rootParameters[2] = {};
+	CD3DX12_DESCRIPTOR_RANGE tableRange;
 
-	rootParameters.InitAsConstants(sizeof(Matrix) / sizeof(UINT32), 0);
-	signatureDesc.Init(1, &rootParameters, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+	tableRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0);
+	rootParameters[0].InitAsConstants((sizeof(Matrix) / sizeof(UINT32)), 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+	rootParameters[1].InitAsDescriptorTable(1, &tableRange, D3D12_SHADER_VISIBILITY_PIXEL);
+
+	CD3DX12_STATIC_SAMPLER_DESC linearWrapSampler;
+	linearWrapSampler.Init(0,
+		D3D12_FILTER_MIN_MAG_MIP_LINEAR,
+		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+		D3D12_TEXTURE_ADDRESS_MODE_WRAP);
+
+	signatureDesc.Init(2, rootParameters, 1, &linearWrapSampler, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 	ComPtr<ID3DBlob> blob;
 
@@ -120,18 +143,19 @@ bool Exercise3::createRootSignature()
 	return succeed;
 }
 
-bool Exercise3::createPSO()
+bool Exercise4::createPSO()
 {
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
 	desc.pRootSignature = rootSignature.Get();
 
-	auto dataVS = DX::ReadData(L"Exercise3VS.cso");
-	auto dataPS = DX::ReadData(L"Exercise3PS.cso");
+	auto dataVS = DX::ReadData(L"Exercise4VS.cso");
+	auto dataPS = DX::ReadData(L"Exercise4PS.cso");
 
 	desc.VS = { dataVS.data(), dataVS.size() };
 	desc.PS = { dataPS.data(), dataPS.size() };
 
-	D3D12_INPUT_ELEMENT_DESC inputLayout[] = { {"MY_POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0} };
+	D3D12_INPUT_ELEMENT_DESC inputLayout[] = { {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
+		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0}};
 	desc.InputLayout = { inputLayout, sizeof(inputLayout) / sizeof(D3D12_INPUT_ELEMENT_DESC) };
 
 	desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;

@@ -26,6 +26,7 @@ void ModuleEditor::update()
     msHistory[historyIndex] = float(app->getElapsedMilis());
 
     historyIndex = (historyIndex + 1) % HISTORY_SIZE;
+
     if (app->getD3D12()->getVsync() != vsync)
         app->getD3D12()->setVSync(vsync);
 }
