@@ -113,3 +113,8 @@ void CameraModule::setCameraFOV(float FOV)
 {
 	this->fov = FOV;
 }
+
+void CameraModule::setModelMatrix(float x, float y, float z)
+{
+	model = Matrix::CreateTranslation(Vector3(x, y, z));
+}

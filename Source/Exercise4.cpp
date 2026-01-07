@@ -59,6 +59,15 @@ void Exercise4::preRender()
 	imgui->startFrame();
 }
 
+void Exercise4::update()
+{
+	CameraModule* camera = app->getCamera();
+
+	Matrix model = camera->getModel();
+	
+	camera->setModelMatrix(x, y, z);
+}
+
 void Exercise4::render()
 {
 
@@ -70,6 +79,12 @@ void Exercise4::render()
 
 	ImGui::ShowDemoWindow();
 	app->getEditor()->fps();
+
+	ImGui::Begin("Model Transform");
+	ImGui::DragFloat("X: ", &x, 0.1f, -20.0f, 20.0f, "%.1f");
+	ImGui::DragFloat("Y: ", &y, 0.1f, -20.0f, 20.0f, "%.1f");
+	ImGui::DragFloat("Z: ", &z, 0.1f, -20.0f, 20.0f, "%.1f");
+	ImGui::End();
 
 	ImGui::Combo("Sampler", &samplerIndex, "Billinear Filtering Wrap\0Point Filtering Wrap\0Billinear Filtering Clamp\0Point Filtering Clamp", 4);
 
@@ -107,7 +122,7 @@ void Exercise4::render()
 
 
 	dd::xzSquareGrid(-10.0f, 10.0f, 0.0f, 1.0f, dd::colors::LightGray);
-	dd::axisTriad(ddConvert(Matrix::Identity), 0.1f, 1.0f);
+	dd::axisTriad(ddConvert(camera->getModel()), 0.1f, 1.0f);
 	debugDraw->record(commandList, viewport.Width, viewport.Height, camera->getView(), camera->getProjection());
 
 	imgui->record(commandList);

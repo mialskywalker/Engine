@@ -26,8 +26,8 @@ Application::Application(int argc, wchar_t** argv, void* hWnd)
     //modules.push_back(new Exercise1());
     //modules.push_back(new Exercise2());
     //modules.push_back(new Exercise3());
-    //modules.push_back(new Exercise4());
-    modules.push_back(new Assignment1());
+    modules.push_back(new Exercise4());
+    //modules.push_back(new Assignment1());
 }
 
 Application::~Application()

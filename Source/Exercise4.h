@@ -17,6 +17,10 @@ class Exercise4 : public Module
 	unsigned index = 0;
 	int samplerIndex = 0;
 
+	float x = 0.0f;
+	float y = 0.0f;
+	float z = 0.0f;
+
 public:
 	Exercise4();
 	~Exercise4();
@@ -24,6 +28,7 @@ public:
 	bool init() override;
 	void render() override;
 	void preRender() override;
+	void update() override;
 
 private:
 	bool createRootSignature();

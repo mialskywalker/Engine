@@ -39,12 +39,14 @@ public:
 
 	void setCameraEnabled(bool enabled);
 	void setCameraFOV(float FOV);
+	void setModelMatrix(float x, float y, float z);
 
 	const float getFOV() { return this->fov; }
 	const float getAspectRatio() { return this->aspectRatio; }
 	const Matrix getView() { return this->view; }
 	const Matrix getProjection() { return this->projection; }
 	const Matrix getMVP() { return this->mvp; }
+	const Matrix getModel() { return this->model; }
 	const float getMoveSpeed() { return this->MOVE_SPEED; }
 	const bool getCameraEnabled() { return this->cameraEnabled; }
 };
