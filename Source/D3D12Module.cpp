@@ -19,7 +19,9 @@ bool D3D12Module::init()
 #endif
 	succeed = createFactory();
 	succeed = succeed && createDevice();
+#if defined(_DEBUG)
 	setupInfoQueue();
+#endif
 	succeed = succeed && createCommandQueue();
 	succeed = succeed && createSwapChain();
 	succeed = succeed && createRTVDescriptorHeap();
