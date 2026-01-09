@@ -38,8 +38,8 @@ public:
 	void update() override;
 
 	void setCameraEnabled(bool enabled);
-	void setCameraFOV(float FOV);
-	void setModelMatrix(float x, float y, float z);
+	void setCameraFOV(float& FOV);
+	void setModelMatrix(const Matrix& newModel);
 
 	const float getFOV() { return this->fov; }
 	const float getAspectRatio() { return this->aspectRatio; }

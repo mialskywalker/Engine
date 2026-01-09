@@ -58,8 +58,7 @@ void Exercise3::render()
 	ID3D12GraphicsCommandList4* commandList = d3d12->getCommandList();
 	CameraModule* camera = app->getCamera();
 
-	ImGui::ShowDemoWindow();
-	app->getEditor()->fps();
+	app->getEditor()->mainSettings();
 
 	commandList->Reset(d3d12->getCurrentCommandAllocator(), pso.Get());
 

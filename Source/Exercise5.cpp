@@ -10,6 +10,7 @@
 #include "ModuleShaderDescriptors.h"
 #include "ModuleSampler.h"
 #include "Model.h"
+#include "ImGuizmo.h"
 
 Exercise5::Exercise5() {}
 
@@ -23,6 +24,7 @@ bool Exercise5::init()
 
 	model = new Model();
 	model->Load("Assets/Models/Duck/Duck.gltf", "Assets/Models/Duck/");
+	//model->Load("Assets/Models/Box/BoxTextured.gltf", "Assets/Models/Box/");
 
 	debugDraw = new DebugDrawPass(app->getD3D12()->getDevice(), app->getD3D12()->getCommandQueue(), false);
 	imgui = app->getEditor()->getImGui();
@@ -36,11 +38,23 @@ bool Exercise5::init()
 void Exercise5::preRender()
 {
 	imgui->startFrame();
+	D3D12Module* d3d12 = app->getD3D12();
+
+	ImGuizmo::BeginFrame();
+
 }
 
 void Exercise5::update()
 {
 	CameraModule* camera = app->getCamera();
+
+	Matrix modelMatrix = model->getModelMatrix();
+	ModuleEditor* editor = app->getEditor();
+
+	if (editor->getSamplerIndex() != samplerIndex)
+		samplerIndex = editor->getSamplerIndex();
+
+	camera->setModelMatrix(modelMatrix);
 }
 
 void Exercise5::render()
@@ -52,10 +66,9 @@ void Exercise5::render()
 	CameraModule* camera = app->getCamera();
 	ModuleSampler* samplers = app->getSamplers();
 
-	ImGui::ShowDemoWindow();
-	app->getEditor()->fps();
-
-	ImGui::Combo("Sampler", &samplerIndex, "Billinear Filtering Wrap\0Point Filtering Wrap\0Billinear Filtering Clamp\0Point Filtering Clamp", 4);
+	app->getEditor()->mainSettings();
+	
+	app->getEditor()->modelOptions(*model);
 
 	commandList->Reset(d3d12->getCurrentCommandAllocator(), pso.Get());
 
@@ -118,7 +131,6 @@ void Exercise5::render()
 	}
 
 	dd::xzSquareGrid(-10.0f, 10.0f, 0.0f, 1.0f, dd::colors::LightGray);
-	dd::axisTriad(ddConvert(camera->getModel()), 0.1f, 1.0f);
 	debugDraw->record(commandList, viewport.Width, viewport.Height, camera->getView(), camera->getProjection());
 
 	imgui->record(commandList);

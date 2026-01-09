@@ -4,6 +4,7 @@
 
 class ImGuiPass;
 class D3D12Module;
+class Model;
 
 class ModuleEditor : public Module
 {
@@ -17,6 +18,7 @@ class ModuleEditor : public Module
 	bool camera = true;
 	
 	float fov = 1.0f;
+	int samplerIndex = 0;
 
 public:
 	ModuleEditor();
@@ -24,8 +26,12 @@ public:
 
 	bool init() override;
 	void update() override;
-	void fps();
+	void mainSettings();
+	void modelOptions(Model& model);
 
 	ImGuiPass* getImGui() { return this->imGuiPass; }
+
+	const int& getSamplerIndex() const { return samplerIndex; }
+	void setSamplerIndex(int& index) { samplerIndex = index; }
 
 };

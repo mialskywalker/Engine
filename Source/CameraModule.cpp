@@ -14,7 +14,7 @@ bool CameraModule::init()
 {
 	D3D12Module* d3d12 = app->getD3D12();
 
-	model = Matrix::Identity;// TODO model in model to scale
+	model = Matrix::Identity;
 
 	startingPosition = Vector3(0.0f, 1.0f, 10.0f);
 	startingRotation = Quaternion::Identity;
@@ -109,12 +109,12 @@ void CameraModule::setCameraEnabled(bool enabled)
 	this->cameraEnabled = enabled;
 }
 
-void CameraModule::setCameraFOV(float FOV)
+void CameraModule::setCameraFOV(float& FOV)
 {
 	this->fov = FOV;
 }
 
-void CameraModule::setModelMatrix(float x, float y, float z)
+void CameraModule::setModelMatrix(const Matrix& newModel)
 {
-	model = Matrix::CreateTranslation(Vector3(x, y, z));
+	model = newModel;
 }

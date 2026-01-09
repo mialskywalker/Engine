@@ -65,7 +65,7 @@ void Exercise4::update()
 
 	Matrix model = camera->getModel();
 	
-	camera->setModelMatrix(x, y, z);
+	//camera->modelTranslate(x, y, z);
 }
 
 void Exercise4::render()
@@ -78,7 +78,7 @@ void Exercise4::render()
 	ModuleSampler* samplers = app->getSamplers();
 
 	ImGui::ShowDemoWindow();
-	app->getEditor()->fps();
+	app->getEditor()->mainSettings();
 
 	ImGui::Begin("Model Transform");
 	ImGui::DragFloat("X: ", &x, 0.1f, -20.0f, 20.0f, "%.1f");

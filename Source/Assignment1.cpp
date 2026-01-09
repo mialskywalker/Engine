@@ -69,7 +69,7 @@ void Assignment1::render()
 	ModuleSampler* samplers = app->getSamplers();
 
 	ImGui::ShowDemoWindow();
-	app->getEditor()->fps();
+	app->getEditor()->mainSettings();
 
 	ImGui::Combo("Sampler", &samplerIndex, "Billinear Filtering Wrap\0Point Filtering Wrap\0Billinear Filtering Clamp\0Point Filtering Clamp", 4);
 

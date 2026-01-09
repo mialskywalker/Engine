@@ -5,6 +5,8 @@
 #include "Application.h"
 #include "D3D12Module.h"
 #include "CameraModule.h"
+#include "Model.h"
+#include "ImGuizmo.h"
 
 ModuleEditor::ModuleEditor() {}
 
@@ -38,7 +40,7 @@ void ModuleEditor::update()
         app->getCamera()->setCameraFOV(fov);
 }
 
-void ModuleEditor::fps()
+void ModuleEditor::mainSettings()
 {
 	ImGui::Begin("Configuration");
 	ImGui::SetNextWindowSize(ImVec2(480, 720), ImGuiCond_Always);
@@ -54,6 +56,8 @@ void ModuleEditor::fps()
         sprintf_s(title, "Reset FOV");
         if (ImGui::Button(title, ImVec2(96, 32)))
             fov = 1.0f;
+
+        ImGui::Combo("Sampler", &samplerIndex, "Billinear Filtering Wrap\0Point Filtering Wrap\0Billinear Filtering Clamp\0Point Filtering Clamp", 4);
     }
 
     if (ImGui::CollapsingHeader("Rendering"))
@@ -78,3 +82,62 @@ void ModuleEditor::fps()
 
     ImGui::End();
 }
+
+void ModuleEditor::modelOptions(Model& model)
+{
+    ImGuizmo::SetRect(0, 0, float(app->getD3D12()->getWindowWidth()), float(app->getD3D12()->getWindowHeight()));
+    ImGui::Begin("Model Options");
+    Matrix modelMatrix = model.getModelMatrix();
+
+    static ImGuizmo::OPERATION currentOperation(ImGuizmo::TRANSLATE);
+    if (ImGui::IsKeyPressed(ImGuiKey_W))
+        currentOperation = ImGuizmo::TRANSLATE;
+    if (ImGui::IsKeyPressed(ImGuiKey_E))
+        currentOperation = ImGuizmo::ROTATE;
+    if (ImGui::IsKeyPressed(ImGuiKey_R))
+        currentOperation = ImGuizmo::SCALE;
+
+    if (ImGui::RadioButton("Translate", currentOperation == ImGuizmo::TRANSLATE))
+        currentOperation = ImGuizmo::TRANSLATE;
+    ImGui::SameLine();
+    if (ImGui::RadioButton("Rotate", currentOperation == ImGuizmo::ROTATE))
+        currentOperation = ImGuizmo::ROTATE;
+    ImGui::SameLine();
+    if (ImGui::RadioButton("Scale", currentOperation == ImGuizmo::SCALE))
+        currentOperation = ImGuizmo::SCALE;
+
+    float matrixTranslation[3], matrixRotation[3], matrixScale[3];
+    ImGuizmo::DecomposeMatrixToComponents((float*)&modelMatrix, matrixTranslation, matrixRotation, matrixScale);
+    ImGui::InputFloat3("Translate", matrixTranslation);
+    ImGui::InputFloat3("Rotate", matrixRotation);
+    ImGui::InputFloat3("Scale", matrixScale);
+    ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, (float*)&modelMatrix);
+
+    if (ImGui::Button("Reset Transform", ImVec2(128, 32)))
+    {
+        matrixTranslation[0] = 0.0f;
+        matrixTranslation[1] = 0.0f;
+        matrixTranslation[2] = 0.0f;
+
+        matrixRotation[0] = 0.0f;
+        matrixRotation[1] = 0.0f;
+        matrixRotation[2] = 0.0f;
+
+        matrixScale[0] = 1.0f;
+        matrixScale[1] = 1.0f;
+        matrixScale[2] = 1.0f;
+
+        ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, (float*)&modelMatrix);
+    }
+
+    const Matrix& viewMatrix = app->getCamera()->getView();
+    Matrix projectionMatrix = app->getCamera()->getProjection();
+
+    ImGuizmo::Manipulate((const float*)&viewMatrix, (const float*)&projectionMatrix, currentOperation, ImGuizmo::LOCAL, (float*)&modelMatrix);
+
+    model.setModelMatrix(modelMatrix);
+
+    ImGui::End();
+
+}
+

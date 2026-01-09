@@ -16,6 +16,10 @@ class Exercise5 : public Module
 	int samplerIndex = 0;
 	Model* model = nullptr;
 
+	float x = 0.0f;
+	float y = 0.0f;
+	float z = 0.0f;
+
 public:
 	Exercise5();
 	~Exercise5();
@@ -28,4 +32,5 @@ public:
 private:
 	bool createRootSignature();
 	bool createPSO();
+
 };
