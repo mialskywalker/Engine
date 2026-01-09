@@ -31,6 +31,7 @@ public:
     ModuleEditor* getEditor() { return editor; }
     ModuleShaderDescriptors* getDescriptors() { return shaderDescriptors; }
     ModuleSampler* getSamplers() { return samplers; }
+
     
     float                       getFPS() const { return 1000.0f * float(MAX_FPS_TICKS) / tickSum; }
     float                       getAvgElapsedMs() const { return tickSum / float(MAX_FPS_TICKS); }

@@ -52,6 +52,12 @@
     <ClCompile Include="Assignment1.cpp">
       <Filter>Exercises</Filter>
     </ClCompile>
+    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Material.cpp" />
+    <ClCompile Include="Exercise5.cpp">
+      <Filter>Exercises</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdParty\imgui-1.89.8\backends\imgui_impl_win32.h" />
@@ -110,6 +116,13 @@
     <ClInclude Include="Assignment1.h">
       <Filter>Exercises</Filter>
     </ClInclude>
+    <ClInclude Include="Model.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Material.h" />
+    <ClInclude Include="Exercise5.h">
+      <Filter>Exercises</Filter>
+    </ClInclude>
+    <ClInclude Include="utils_gltf.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Engine.rc" />
@@ -155,6 +168,12 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Assignment1VS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Exercise5PS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Exercise5VS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

@@ -14,7 +14,7 @@ bool CameraModule::init()
 {
 	D3D12Module* d3d12 = app->getD3D12();
 
-	model = Matrix::Identity;
+	model = Matrix::Identity;// TODO model in model to scale
 
 	startingPosition = Vector3(0.0f, 1.0f, 10.0f);
 	startingRotation = Quaternion::Identity;

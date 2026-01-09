@@ -12,6 +12,7 @@
 #include "Exercise3.h"
 #include "Exercise4.h"
 #include "Assignment1.h"
+#include "Exercise5.h"
 
 
 Application::Application(int argc, wchar_t** argv, void* hWnd)
@@ -26,8 +27,9 @@ Application::Application(int argc, wchar_t** argv, void* hWnd)
     //modules.push_back(new Exercise1());
     //modules.push_back(new Exercise2());
     //modules.push_back(new Exercise3());
-    modules.push_back(new Exercise4());
+    //modules.push_back(new Exercise4());
     //modules.push_back(new Assignment1());
+    modules.push_back(new Exercise5());
 }
 
 Application::~Application()

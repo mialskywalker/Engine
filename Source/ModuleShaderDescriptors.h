@@ -16,6 +16,7 @@ public:
 	bool init() override;
 	unsigned allocateDescriptor();
 	unsigned createSRV(ID3D12Resource* resource);
+	unsigned createNullSRV();
 	void reset();
 
 	ID3D12DescriptorHeap* getHeap() { return this->descriptorHeap.Get(); }
