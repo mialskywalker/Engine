@@ -58,6 +58,9 @@
     <ClCompile Include="Exercise5.cpp">
       <Filter>Exercises</Filter>
     </ClCompile>
+    <ClCompile Include="Exercise6.cpp">
+      <Filter>Exercises</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdParty\imgui-1.89.8\backends\imgui_impl_win32.h" />
@@ -123,6 +126,9 @@
       <Filter>Exercises</Filter>
     </ClInclude>
     <ClInclude Include="utils_gltf.h" />
+    <ClInclude Include="Exercise6.h">
+      <Filter>Exercises</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Engine.rc" />

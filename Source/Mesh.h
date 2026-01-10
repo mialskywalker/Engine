@@ -11,6 +11,7 @@ public:
 	{
 		Vector3 position = Vector3::Zero;
 		Vector2 texCoord0 = Vector2::Zero;
+		Vector3 normal = Vector3::Zero;
 	};
 
 private:

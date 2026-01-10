@@ -24,6 +24,8 @@ void Mesh::load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const 
 			numVertices, model, pos->second);
 		loadAccessorData(vertexData + offsetof(Vertex, texCoord0), sizeof(Vector2), sizeof(Vertex),
 			numVertices, model, primitive.attributes, "TEXCOORD_0");
+		loadAccessorData(vertexData + offsetof(Vertex, normal), sizeof(Vector3), sizeof(Vertex),
+			numVertices, model, primitive.attributes, "NORMAL");
 
 		vertexBuffer = app->getResources()->createDefaultBuffer(numVertices * sizeof(Vertex), vertices.get());
 

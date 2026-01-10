@@ -1,5 +1,5 @@
 #include "Globals.h"
-#include "Exercise5.h"
+#include "Exercise6.h"
 #include "Application.h"
 #include "D3D12Module.h"
 #include "ModuleResources.h"
@@ -12,14 +12,14 @@
 #include "Model.h"
 #include "ImGuizmo.h"
 
-Exercise5::Exercise5() {}
+Exercise6::Exercise6() {}
 
-Exercise5::~Exercise5()
+Exercise6::~Exercise6()
 {
 	delete debugDraw, model;
 }
 
-bool Exercise5::init()
+bool Exercise6::init()
 {
 
 	model = new Model();
@@ -35,7 +35,7 @@ bool Exercise5::init()
 	return succeed;
 }
 
-void Exercise5::preRender()
+void Exercise6::preRender()
 {
 	imgui->startFrame();
 	D3D12Module* d3d12 = app->getD3D12();
@@ -44,7 +44,7 @@ void Exercise5::preRender()
 
 }
 
-void Exercise5::update()
+void Exercise6::update()
 {
 	CameraModule* camera = app->getCamera();
 
@@ -57,7 +57,7 @@ void Exercise5::update()
 	camera->setModelMatrix(modelMatrix);
 }
 
-void Exercise5::render()
+void Exercise6::render()
 {
 
 	D3D12Module* d3d12 = app->getD3D12();
@@ -67,7 +67,7 @@ void Exercise5::render()
 	ModuleSampler* samplers = app->getSamplers();
 
 	app->getEditor()->mainSettings();
-	
+
 	app->getEditor()->modelOptions(*model);
 
 	commandList->Reset(d3d12->getCurrentCommandAllocator(), pso.Get());
@@ -144,7 +144,7 @@ void Exercise5::render()
 
 }
 
-bool Exercise5::createRootSignature()
+bool Exercise6::createRootSignature()
 {
 	CD3DX12_ROOT_SIGNATURE_DESC signatureDesc = {};
 	CD3DX12_ROOT_PARAMETER rootParameters[4] = {};
@@ -168,7 +168,7 @@ bool Exercise5::createRootSignature()
 	return succeed;
 }
 
-bool Exercise5::createPSO()
+bool Exercise6::createPSO()
 {
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
 	desc.pRootSignature = rootSignature.Get();
@@ -180,7 +180,8 @@ bool Exercise5::createPSO()
 	desc.PS = { dataPS.data(), dataPS.size() };
 
 	D3D12_INPUT_ELEMENT_DESC inputLayout[] = { {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
-		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0} };
+		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
+		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0} };
 	desc.InputLayout = { inputLayout, sizeof(inputLayout) / sizeof(D3D12_INPUT_ELEMENT_DESC) };
 
 	desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
