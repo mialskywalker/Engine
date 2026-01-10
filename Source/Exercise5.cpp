@@ -112,7 +112,7 @@ void Exercise5::render()
 		if (matIdx < 0) matIdx = 0;
 		Material& mat = model->getMaterial(matIdx);
 
-		commandList->SetGraphicsRootConstantBufferView(1, mat.getMatGPUAddress());
+		//commandList->SetGraphicsRootConstantBufferView(1, mat.getMatGPUAddress());
 
 		commandList->SetGraphicsRootDescriptorTable(2, descriptors->getGPUHandle(mat.getIndex()));
 

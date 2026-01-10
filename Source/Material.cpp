@@ -11,12 +11,21 @@ Material::~Material() {}
 
 void Material::load(const tinygltf::Model& model, const tinygltf::Material& material, const char* basePath)
 {
-	data.baseColor = Vector4(float(material.pbrMetallicRoughness.baseColorFactor[0]),
+	/*data.baseColor = Vector4(float(material.pbrMetallicRoughness.baseColorFactor[0]),
+		float(material.pbrMetallicRoughness.baseColorFactor[1]),
+		float(material.pbrMetallicRoughness.baseColorFactor[2]),
+		float(material.pbrMetallicRoughness.baseColorFactor[3]));*/
+
+	phong.diffuseColor = Vector4(float(material.pbrMetallicRoughness.baseColorFactor[0]),
 		float(material.pbrMetallicRoughness.baseColorFactor[1]),
 		float(material.pbrMetallicRoughness.baseColorFactor[2]),
 		float(material.pbrMetallicRoughness.baseColorFactor[3]));
 
-	data.hasColorTexture = FALSE;
+	phong.Kd = 1.0f;
+	phong.Ks = 0.3f;
+	phong.shininess = 16.0f;
+	//data.hasColorTexture = FALSE;
+	phong.hasDiffuseTex = FALSE;
 
 	if (material.pbrMetallicRoughness.baseColorTexture.index >= 0)
 	{
@@ -25,15 +34,27 @@ void Material::load(const tinygltf::Model& model, const tinygltf::Material& mate
 		if (!image.uri.empty())
 		{
 			colorTexture = app->getResources()->createTextureFromFile(std::string(basePath) + image.uri);
-			data.hasColorTexture = TRUE;
+			//data.hasColorTexture = TRUE;
+			phong.hasDiffuseTex = TRUE;
 		}
 	}
 
-	if (data.hasColorTexture)
+	/*if (data.hasColorTexture)
+		index = app->getDescriptors()->createSRV(colorTexture.Get());
+	else
+		index = app->getDescriptors()->createNullSRV();*/
+	if (phong.hasDiffuseTex)
 		index = app->getDescriptors()->createSRV(colorTexture.Get());
 	else
 		index = app->getDescriptors()->createNullSRV();
 
-	materialBuffer = app->getResources()->createDefaultBuffer(alignUp(sizeof(MaterialData), D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT), &data);
-	materialAddress = materialBuffer->GetGPUVirtualAddress();
+	//materialBuffer = app->getResources()->createDefaultBuffer(alignUp(sizeof(MaterialData), D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT), &data);
+	//materialAddress = materialBuffer->GetGPUVirtualAddress();
+}
+
+void Material::setPhong(float kd, float ks, float shiny)
+{
+	phong.Kd = kd;
+	phong.Ks = ks;
+	phong.shininess = shiny;
 }

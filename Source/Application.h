@@ -13,6 +13,7 @@ class CameraModule;
 class ModuleEditor;
 class ModuleShaderDescriptors;
 class ModuleSampler;
+class ModuleRingBuffer;
 
 class Application
 {
@@ -31,6 +32,8 @@ public:
     ModuleEditor* getEditor() { return editor; }
     ModuleShaderDescriptors* getDescriptors() { return shaderDescriptors; }
     ModuleSampler* getSamplers() { return samplers; }
+    ModuleRingBuffer* getRingBuffer() { return ringBuffer; }
+
 
     
     float                       getFPS() const { return 1000.0f * float(MAX_FPS_TICKS) / tickSum; }
@@ -51,6 +54,7 @@ private:
     ModuleEditor* editor = nullptr;
     ModuleShaderDescriptors* shaderDescriptors = nullptr;
     ModuleSampler* samplers = nullptr;
+    ModuleRingBuffer* ringBuffer = nullptr;
 
     uint64_t  lastMilis = 0;
     TickList  tickList;

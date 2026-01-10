@@ -49,4 +49,5 @@ public:
 	const Matrix getModel() { return this->model; }
 	const float getMoveSpeed() { return this->MOVE_SPEED; }
 	const bool getCameraEnabled() { return this->cameraEnabled; }
+	const Vector3 getPosition() { return currentPosition; }
 };

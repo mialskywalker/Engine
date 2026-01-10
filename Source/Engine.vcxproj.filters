@@ -61,6 +61,9 @@
     <ClCompile Include="Exercise6.cpp">
       <Filter>Exercises</Filter>
     </ClCompile>
+    <ClCompile Include="ModuleRingBuffer.cpp">
+      <Filter>Modules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdParty\imgui-1.89.8\backends\imgui_impl_win32.h" />
@@ -129,6 +132,9 @@
     <ClInclude Include="Exercise6.h">
       <Filter>Exercises</Filter>
     </ClInclude>
+    <ClInclude Include="ModuleRingBuffer.h">
+      <Filter>Modules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Engine.rc" />
@@ -180,6 +186,12 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Exercise5VS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Exercise6PS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Exercise6VS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

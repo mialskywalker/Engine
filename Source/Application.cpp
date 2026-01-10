@@ -7,6 +7,7 @@
 #include "ModuleEditor.h"
 #include "ModuleShaderDescriptors.h"
 #include "ModuleSampler.h"
+#include "ModuleRingBuffer.h"
 #include "Exercise1.h"
 #include "Exercise2.h"
 #include "Exercise3.h"
@@ -25,6 +26,7 @@ Application::Application(int argc, wchar_t** argv, void* hWnd)
     modules.push_back(camera = new CameraModule());
     modules.push_back(shaderDescriptors = new ModuleShaderDescriptors());
     modules.push_back(samplers = new ModuleSampler());
+    modules.push_back(ringBuffer = new ModuleRingBuffer());
     //modules.push_back(new Exercise1());
     //modules.push_back(new Exercise2());
     //modules.push_back(new Exercise3());

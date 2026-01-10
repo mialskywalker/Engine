@@ -54,6 +54,7 @@ public:
 	ID3D12Resource* getCurrentBackBuffer() { return backBuffers[currentBufferIndex].Get(); }
 	HWND getHwnd() { return hWnd; }
 	bool getVsync() { return this->vsync; }
+	const unsigned& getCurrentBackBufferIndex() const { return currentBufferIndex; }
 
 	unsigned getWindowWidth() { return this->windowWidth; }
 	unsigned getWindowHeight() { return this->windowHeight; }
