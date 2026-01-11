@@ -1,6 +1,6 @@
 # Engine
 
-Engine built for the First Assignment for the UPC Masters Degree.
+Engine built for the Second Assignment for the UPC Masters Degree.
 
 Link to [GitHub Repository](https://github.com/mialskywalker/Engine)
 
@@ -22,6 +22,7 @@ Includes only runtime-required assets:
 - Compiled shaders (.cso)
 - Game assets
 - Required DLLs
+Click on Reset Transform to scale down the model to 0.01 in order to view properly
 
 ## License
 This Engine is available under the `MIT License`. For more information, click [here](LICENSE.txt)
