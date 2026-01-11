@@ -8,6 +8,8 @@
 #include "ModuleShaderDescriptors.h"
 #include "ModuleSampler.h"
 #include "ModuleRingBuffer.h"
+#include "ModuleRTDescriptors.h"
+#include "ModuleDSDescriptors.h"
 #include "Exercise1.h"
 #include "Exercise2.h"
 #include "Exercise3.h"
@@ -15,7 +17,8 @@
 #include "Assignment1.h"
 #include "Exercise5.h"
 #include "Exercise6.h"
-
+#include "Exercise7.h"
+#include "Assignment2.h"
 
 Application::Application(int argc, wchar_t** argv, void* hWnd)
 {
@@ -27,13 +30,18 @@ Application::Application(int argc, wchar_t** argv, void* hWnd)
     modules.push_back(shaderDescriptors = new ModuleShaderDescriptors());
     modules.push_back(samplers = new ModuleSampler());
     modules.push_back(ringBuffer = new ModuleRingBuffer());
+    modules.push_back(rtDescriptors = new ModuleRTDescriptors());
+    modules.push_back(dsDescriptors = new ModuleDSDescriptors());
     //modules.push_back(new Exercise1());
     //modules.push_back(new Exercise2());
     //modules.push_back(new Exercise3());
     //modules.push_back(new Exercise4());
     //modules.push_back(new Assignment1());
     //modules.push_back(new Exercise5());
-    modules.push_back(new Exercise6());
+    //modules.push_back(new Exercise6());
+   // modules.push_back(new Exercise7());
+    modules.push_back(new Assignment2());
+
 }
 
 Application::~Application()

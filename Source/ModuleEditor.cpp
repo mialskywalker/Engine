@@ -123,9 +123,9 @@ void ModuleEditor::modelOptions(Model& model)
         matrixRotation[1] = 0.0f;
         matrixRotation[2] = 0.0f;
 
-        matrixScale[0] = 1.0f;
-        matrixScale[1] = 1.0f;
-        matrixScale[2] = 1.0f;
+        matrixScale[0] = 0.01f;
+        matrixScale[1] = 0.01f;
+        matrixScale[2] = 0.01f;
 
         ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, (float*)&modelMatrix);
     }

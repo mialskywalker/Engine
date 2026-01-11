@@ -14,6 +14,8 @@ class ModuleEditor;
 class ModuleShaderDescriptors;
 class ModuleSampler;
 class ModuleRingBuffer;
+class ModuleRTDescriptors;
+class ModuleDSDescriptors;
 
 class Application
 {
@@ -33,6 +35,8 @@ public:
     ModuleShaderDescriptors* getDescriptors() { return shaderDescriptors; }
     ModuleSampler* getSamplers() { return samplers; }
     ModuleRingBuffer* getRingBuffer() { return ringBuffer; }
+    ModuleRTDescriptors* getRTDescriptors() { return rtDescriptors; }
+    ModuleDSDescriptors* getDSDescriptors() { return dsDescriptors; }
 
 
     
@@ -55,6 +59,8 @@ private:
     ModuleShaderDescriptors* shaderDescriptors = nullptr;
     ModuleSampler* samplers = nullptr;
     ModuleRingBuffer* ringBuffer = nullptr;
+    ModuleRTDescriptors* rtDescriptors = nullptr;
+    ModuleDSDescriptors* dsDescriptors = nullptr;
 
     uint64_t  lastMilis = 0;
     TickList  tickList;

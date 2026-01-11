@@ -181,3 +181,58 @@ ComPtr<ID3D12Resource> ModuleResources::createTextureFromFile(const std::filesys
 
 	return texture;
 }
+
+ComPtr<ID3D12Resource> ModuleResources::createRenderTarget(DXGI_FORMAT format, unsigned width, unsigned height, const float clearColor[4])
+{
+	ComPtr<ID3D12Resource> texture;
+	//D3D12_RESOURCE_DESC textureDesc;
+	CD3DX12_HEAP_PROPERTIES textureHeap = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+
+	//textureDesc = CD3DX12_RESOURCE_DESC::Tex2D(format, UINT64(width), UINT(height), UINT16(1), UINT16(1), D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
+
+	auto texDesc = CD3DX12_RESOURCE_DESC::Tex2D(
+		format,
+		UINT64(width),
+		UINT(height),
+		1, 1,
+		1, 0,
+		D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET
+	);
+
+	D3D12_CLEAR_VALUE clear = {};
+	clear.Format = format;
+	clear.Color[0] = clearColor[0];
+	clear.Color[1] = clearColor[1];
+	clear.Color[2] = clearColor[2];
+	clear.Color[3] = clearColor[3];
+
+	app->getD3D12()->getDevice()->CreateCommittedResource(&textureHeap, D3D12_HEAP_FLAG_ALLOW_ALL_BUFFERS_AND_TEXTURES, &texDesc, D3D12_RESOURCE_STATE_COMMON, &clear, IID_PPV_ARGS(&texture));
+
+	return texture;
+}
+
+ComPtr<ID3D12Resource> ModuleResources::createDepthStencil(DXGI_FORMAT format, unsigned width, unsigned height, float clearValue)
+{
+	ComPtr<ID3D12Resource> texture;
+	//D3D12_RESOURCE_DESC textureDesc;
+	CD3DX12_HEAP_PROPERTIES textureHeap = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+
+	//textureDesc = CD3DX12_RESOURCE_DESC::Tex2D(format, UINT64(width), UINT(height), UINT16(1), UINT16(1), D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+
+	auto texDesc = CD3DX12_RESOURCE_DESC::Tex2D(
+		format,
+		UINT64(width),
+		UINT(height),
+		1, 1,
+		1, 0,
+		D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL
+	);
+
+	D3D12_CLEAR_VALUE clear = {};
+	clear.Format = format;
+	clear.DepthStencil.Depth = clearValue;
+
+	app->getD3D12()->getDevice()->CreateCommittedResource(&textureHeap, D3D12_HEAP_FLAG_ALLOW_ALL_BUFFERS_AND_TEXTURES, &texDesc, D3D12_RESOURCE_STATE_DEPTH_WRITE, &clear, IID_PPV_ARGS(&texture));
+
+	return texture;
+}
