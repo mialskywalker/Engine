@@ -16,6 +16,11 @@ Link to [GitHub Repository](https://github.com/mialskywalker/Engine)
 - Hold SHIFT key: Doubles camera's movement speed
 - F key: Focuses the camera on the game object
 
+## Object Manipulation
+- W key: Translate object
+- E key: Rotate object
+- R key: Scale object
+
 ## Notes
 Includes only runtime-required assets:
 - Executable
